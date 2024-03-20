@@ -1,0 +1,42 @@
+version: "3"
+services:
+  redis:
+    image: redis:alpine3.19
+    restart: always
+    expose:
+      - 6379
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile_api
+    image: hdii_tools__api
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - HDII__API__BIND_ADDRESS=0.0.0.0:3000
+      - HDII__API__REDIS_DB=${HDII__API__REDIS_DB-0}
+      - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
+      - HDII__API__REDIS_PORT=${HDII__API__REDIS_PORT-6379}
+      - HDII__API__REMOTE_HOST=${HDII__API__REMOTE_HOST-helldivers-2.fly.dev}
+      - HDII__API__REMOTE_PORT=${HDII__API__REMOTE_PORT-443}
+      - HDII__API__REMOTE_SCHEME=${HDII__API__REMOTE_SCHEME-https}
+    expose:
+      - 3000
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile_bot
+    image: hdii_tools__bot
+    restart: always
+    depends_on:
+      - api
+    environment:
+      - HDII__BOT__API_HOST=${HDII__BOT__API_HOST-api}
+      - HDII__BOT__API_PORT=${HDII__BOT__API_PORT-3000}
+      - HDII__BOT__API_SCHEME=${HDII__BOT__API_SCHEME-http}
+      - HDII__BOT__DB_DRIVER=${HDII__BOT_DB_DRIVER-}
+      - HDII__BOT__DB_DSN=${HDII__BOT_DB_DSN-}
+      - HDII__BOT__TOKEN=${HDII__BOT_TOKEN}
+    volumes:
+      - ${HDII__BOT__VOLUME_PATH_HOST}:${HDII__BOT__VOLUME_PATH_CONTAINER}
