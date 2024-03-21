@@ -1,7 +1,6 @@
 package globals
 
 import (
-	"Helldivers2Tools/pkg/shared/utils"
 	"os"
 )
 
@@ -18,7 +17,5 @@ func SetGlobals() {
 
 	BotToken = os.Getenv("HDII__BOT__TOKEN")
 
-	ApiScheme = os.Getenv("HDII__BOT__API_SCHEME")
-	ApiHost = os.Getenv("HDII__BOT__API_HOST")
-	ApiPort = utils.SafeAtoi(os.Getenv("HDII__BOT__API_PORT"))
+	ApiUrl = os.Getenv("HDII__BOT__API")
 }

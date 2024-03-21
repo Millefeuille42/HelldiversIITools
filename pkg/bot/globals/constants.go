@@ -6,7 +6,5 @@ var (
 
 	BotToken = ""
 
-	ApiHost   = ""
-	ApiScheme = ""
-	ApiPort   = 0
+	ApiUrl = ""
 )

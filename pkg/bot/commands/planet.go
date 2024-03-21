@@ -3,46 +3,37 @@ package commands
 import (
 	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
+	"Helldivers2Tools/pkg/shared/utils"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
+	"strings"
 )
 
 var colorMap = map[string]int{
-	"Automaton": 6684929,
-	"Terminids": 10521697,
-	"Humans":    30646,
+	"Automatons": 6684929,
+	"Terminids":  10521697,
+	"Humans":     30646,
 }
 
 var imageMap = map[string]string{
-	"Automaton": "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040096477085716.png",
-	"Terminids": "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040867453337720.png",
-	"Humans":    "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040867881156618.png",
+	"Automatons": "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040096477085716.png",
+	"Terminids":  "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040867453337720.png",
+	"Humans":     "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040867881156618.png",
 }
 
-func buildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
-	status, err := helldivers.Client.GetCurrentWarPlanetStatus(planet.Index)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
+var planets []lib.PlanetName
 
+func buildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 	ret := &discordgo.MessageEmbed{
-		Type: "rich",
-		// TODO set color depending on controlling faction
-		Color: colorMap[status.Owner],
+		Type:  "rich",
+		Color: colorMap[planet.CurrentOwner],
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: imageMap[status.Owner],
+			URL: imageMap[planet.CurrentOwner],
 		},
-		Title:  planet.Name,
+		Title:  planet.PlanetName,
 		Fields: make([]*discordgo.MessageEmbedField, 0),
 	}
-
-	ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
-		Name:   "Sector",
-		Value:  planet.Sector,
-		Inline: false,
-	})
 
 	if planet.InitialOwner != "Humans" {
 		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
@@ -54,26 +45,48 @@ func buildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 
 	ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
 		Name:   "Under control of",
-		Value:  status.Owner,
+		Value:  planet.CurrentOwner,
 		Inline: true,
 	})
 
+	if planet.LibPercent > 0 {
+		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
+			Name:   "Liberation status",
+			Value:  fmt.Sprintf("%f%% liberated", planet.LibPercent),
+			Inline: false,
+		})
+
+		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
+			Name:   "Liberated in",
+			Value:  fmt.Sprintf("%f hours", planet.HoursComplete),
+			Inline: true,
+		})
+	}
+
 	ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
 		Name:   "Helldivers",
-		Value:  fmt.Sprintf("%d in mission", status.Players),
+		Value:  fmt.Sprintf("%d in mission, %d KIA", planet.Players, planet.Deaths),
 		Inline: false,
 	})
 
 	ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
-		Name:   "Liberation status",
-		Value:  fmt.Sprintf("%f%% liberated", status.Liberation),
-		Inline: true,
+		Name:   "Missions",
+		Value:  fmt.Sprintf("%d won, %d lost", planet.MissionsWon, planet.MissionsLost),
+		Inline: false,
 	})
+
+	if planet.WaypointNames != "" {
+		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
+			Name:   "Related planets",
+			Value:  planet.WaypointNames,
+			Inline: false,
+		})
+	}
 
 	return ret
 }
 
-func buildPlanetsChoices(planets []lib.Planet) []*discordgo.ApplicationCommandOptionChoice {
+func buildPlanetsChoices(planets []lib.PlanetName) []*discordgo.ApplicationCommandOptionChoice {
 	choices := make([]*discordgo.ApplicationCommandOptionChoice, 0)
 	for _, planet := range planets {
 		choices = append(choices, &discordgo.ApplicationCommandOptionChoice{
@@ -85,6 +98,30 @@ func buildPlanetsChoices(planets []lib.Planet) []*discordgo.ApplicationCommandOp
 	return choices
 }
 
+func buildPlanetComponent(planet lib.Planet) []discordgo.MessageComponent {
+	if planet.WaypointNames == "" {
+		return nil
+	}
+
+	var buttons []discordgo.MessageComponent
+	waypointsNames := strings.Split(planet.WaypointNames, ", ")
+	waypointsIndices := strings.Split(planet.WaypointIndices, ", ")
+
+	for index, waypointsIndex := range waypointsIndices {
+		buttons = append(buttons, discordgo.Button{
+			Label:    waypointsNames[index],
+			Style:    0,
+			Disabled: false,
+			Emoji: discordgo.ComponentEmoji{
+				Name: "🌎",
+			},
+			CustomID: fmt.Sprintf("planet_button-%s", waypointsIndex),
+		})
+	}
+
+	return []discordgo.MessageComponent{discordgo.ActionsRow{Components: buttons}}
+}
+
 func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	optionMap := parseOptions(i.ApplicationCommandData().Options)
 
@@ -93,19 +130,15 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		return
 	}
 
-	warSeason, err := helldivers.Client.GetWarSeasons()
-	if err != nil {
-		log.Println(err)
-		interactionSendError(s, i, "Error getting feed", 0)
-		return
-	}
-
-	planets, err := helldivers.Client.GetPlanets(warSeason.Current)
-	if i.Type != discordgo.InteractionApplicationCommand {
+	var err error
+	if planets == nil {
+		planets, err = helldivers.GoDiversClient.GetPlanetsName()
 		if err != nil {
 			log.Println(err)
 			return
 		}
+	}
+	if i.Type != discordgo.InteractionApplicationCommand {
 		choices := buildPlanetsChoices(planets)
 		handleAutocomplete(s, i, optionMap["name"].StringValue(), choices)
 		return
@@ -118,12 +151,42 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 
 	selectedPlanet := lib.Planet{}
 	for _, planet := range planets {
-		if planet.Name == optionMap["name"].StringValue() {
-			selectedPlanet = planet
+		if strings.ToLower(planet.Name) == strings.ToLower(optionMap["name"].StringValue()) {
+			selectedPlanet, err = helldivers.GoDiversClient.GetPlanet(planet.Index)
+			if err != nil {
+				interactionSendError(s, i, "Planet not found", discordgo.MessageFlagsEphemeral)
+				return
+			}
 			break
 		}
 	}
-	if selectedPlanet.Name == "" {
+
+	planets = nil
+
+	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content:    "",
+			Components: buildPlanetComponent(selectedPlanet),
+			Embeds: []*discordgo.MessageEmbed{
+				buildPlanetEmbed(selectedPlanet),
+			},
+			AllowedMentions: nil,
+			Choices:         nil,
+			CustomID:        "",
+			Title:           "",
+		},
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	id := strings.Split(i.MessageComponentData().CustomID, "-")[1]
+	planet, err := helldivers.GoDiversClient.GetPlanet(utils.SafeAtoi(id))
+	if err != nil {
 		interactionSendError(s, i, "Planet not found", discordgo.MessageFlagsEphemeral)
 		return
 	}
@@ -132,9 +195,9 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content:    "",
-			Components: nil,
+			Components: buildPlanetComponent(planet),
 			Embeds: []*discordgo.MessageEmbed{
-				buildPlanetEmbed(selectedPlanet),
+				buildPlanetEmbed(planet),
 			},
 			AllowedMentions: nil,
 			Choices:         nil,

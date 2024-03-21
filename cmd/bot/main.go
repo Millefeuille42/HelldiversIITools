@@ -73,11 +73,7 @@ func main() {
 	globals.Bot = setUpBot()
 	commands.PopulateCommandMap()
 
-	helldivers.Client, err = lib.New(
-		globals.ApiScheme,
-		globals.ApiHost,
-		globals.ApiPort,
-	)
+	helldivers.GoDiversClient, err = lib.New(globals.ApiUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,17 +83,6 @@ func main() {
 
 func routine() {
 	for {
-		warSeasons, err := helldivers.Client.GetWarSeasons()
-		if err != nil {
-			log.Println(err)
-		}
-		if warSeasons.Current == "" {
-			log.Println("Could not fetch war seasons")
-			time.Sleep(time.Second * 5)
-			continue
-		}
-		log.Println("current warId is:", warSeasons.Current)
-
 		time.Sleep(time.Hour * 24)
 	}
 }

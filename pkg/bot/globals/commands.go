@@ -8,8 +8,16 @@ var (
 
 var DiscordCommands = []*discordgo.ApplicationCommand{
 	{
-		Name:        "feed",
-		Description: "Get latest feed message",
+		Name:        "news",
+		Description: "Get latest news message",
+	},
+	{
+		Name:        "galaxy",
+		Description: "Get stats about the galaxy",
+	},
+	{
+		Name:        "order",
+		Description: "Get latest major order",
 	},
 	{
 		Name:        "planet",

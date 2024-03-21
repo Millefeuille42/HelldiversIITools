@@ -3,9 +3,9 @@ package commands
 import (
 	"Helldivers2Tools/pkg/bot/models"
 	"Helldivers2Tools/pkg/shared/helldivers"
-	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
+	"strings"
 )
 
 func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -17,30 +17,41 @@ func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	warSeason, err := helldivers.Client.GetWarSeasons()
-	if err != nil {
-		log.Println(err)
-		interactionSendError(s, i, "Error getting feed", 0)
-		return
-	}
-	feed, err := helldivers.Client.GetFeed(warSeason.Current)
+	newsMessage, err := helldivers.GoDiversClient.GetNewsMessage()
 	if err != nil {
 		log.Println(err)
 		interactionSendError(s, i, "Error getting feed", 0)
 		return
 	}
 
-	if len(feed) <= 0 && feed[len(feed)-1].Message.En != "" {
-		log.Println(err)
-		interactionSendError(s, i, "No message in feed", 0)
-		return
+	newsTitle := "New Message"
+	message := newsMessage.Message
+	newsSplit := strings.Split(newsMessage.Message, "\n")
+	if len(newsSplit) > 1 {
+		newsTitle = newsSplit[0]
+		message = newsSplit[1]
 	}
-
-	feedElement := feed[len(feed)-1]
 
 	// TODO Add language choice
-	message := fmt.Sprintf("%s", feedElement.Message.En)
-	message = fmt.Sprintf("```%s```", message)
+	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: "",
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Type:        "rich",
+					Title:       newsTitle,
+					Description: message,
+				},
+			},
+			AllowedMentions: nil,
+			Choices:         nil,
+			CustomID:        "",
+			Title:           "",
+		},
+	})
 
-	interactionSendResponse(s, i, message, 0)
+	if err != nil {
+		log.Println(err)
+	}
 }
