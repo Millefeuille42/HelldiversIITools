@@ -10,8 +10,12 @@ var commandMap = make(map[string]func(s *discordgo.Session, i *discordgo.Interac
 var componentMap = make(map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate))
 
 func PopulateCommandMap() {
-	commandMap["feed"] = feedCommandHandler
+	commandMap["news"] = feedCommandHandler
 	commandMap["planet"] = planetCommandHandler
+	commandMap["galaxy"] = galaxyCommandHandler
+	commandMap["order"] = orderCommandHandler
+
+	componentMap["planet_button"] = planetComponentHandler
 }
 
 func CommandManager(s *discordgo.Session, i *discordgo.InteractionCreate) {

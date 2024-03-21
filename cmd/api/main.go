@@ -29,11 +29,12 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
 	var err error
-	helldivers.Client, err = lib.New(
-		os.Getenv("HDII__API__REMOTE_SCHEME"),
-		os.Getenv("HDII__API__REMOTE_HOST"),
-		utils.SafeAtoi(os.Getenv("HDII__API__REMOTE_PORT")),
-	)
+	helldivers.HDClient, err = lib.New(os.Getenv("HDII__API__HELLDIVERS_API"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	helldivers.DiveHarderClient, err = lib.New(os.Getenv("HDII__API__DIVEHARDER_API"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,15 +51,13 @@ func main() {
 	app.Use(logger.New())
 
 	apiGroup := app.Group("/api")
-	apiGroup.Get("/", getWarSeasons)
+	apiGroup.Get("/feed", feedHandler)
+	apiGroup.Get("/order", orderHandler)
+	apiGroup.Get("/galaxy", galaxyStatsHandler)
 
-	warGroup := apiGroup.Group("/:war_id")
-	warGroup.Get("/feed", getFeed)
-
-	planetsGroup := warGroup.Group("/planets")
-	planetsGroup.Get("/", getPlanets)
-	planetsGroup.Get("/:planet_id", getPlanet)
-	planetsGroup.Get("/:planet_id/status", getPlanetStatus)
+	planetsGroup := apiGroup.Group("/planets")
+	planetsGroup.Get("/", planetsNameHandler)
+	planetsGroup.Get("/:planet_id", planetHandler)
 
 	go startServer(app, os.Getenv("HDII__API__BIND_ADDRESS"))
 

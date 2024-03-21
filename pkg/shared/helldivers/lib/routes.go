@@ -1,12 +1,14 @@
 package lib
 
 const (
-	EventsRoute       = "/%s/events"            // warSeasonId
-	LatestEventRoute  = "/%s/events/latest"     // warSeasonId
-	FeedRoute         = "/%s/feed"              // warSeasonId
-	InfoRoute         = "/%s/info"              // warSeasonId
-	PlanetsRoute      = "/%s/planets"           // warSeasonId
-	PlanetRoute       = "/%s/planets/%d"        // warSeasonId, PlanetId
-	PlanetStatusRoute = "/%s/planets/%d/status" // warSeasonId, PlanetId
-	StatusRoute       = "/%s/events"            // warSeasonId
+	DiveHarderStatsRoute         = "/raw/planetstats"
+	DiveHarderPlanetsRoute       = "/planets"
+	DiveHarderPlanetsActiveRoute = "/planets/active"
+	HelldiversNewsFeedRoute      = "/NewsFeed/%s?fromTimeStamp=%d"
+	HelldiversAssignmentRoute    = "/v2/Assignment/War/%s"
+	GoDiversFeedRoute            = "/feed"
+	GoDiversOrderRoute           = "/order"
+	GoDiversPlanetsNameRoute     = "/planets"
+	GoDiversPlanetRoute          = "/planets/%d"
+	GoDiversGalaxyStatsRoute     = "/galaxy"
 )

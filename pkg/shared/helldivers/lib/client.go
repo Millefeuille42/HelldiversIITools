@@ -2,8 +2,6 @@ package lib
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
@@ -16,25 +14,24 @@ type Response struct {
 }
 
 type Client struct {
-	Url    url.URL
+	Url    *url.URL
 	client *http.Client
 	jar    *cookiejar.Jar
-
-	WarSeasons WarSeasons
 }
 
-func New(scheme, host string, port int) (*Client, error) {
+func New(address string) (*Client, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, err
 	}
 
+	parsed, err := url.Parse(address)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Client{
-		Url: url.URL{
-			Scheme: scheme,
-			Host:   fmt.Sprintf("%s:%d", host, port),
-			Path:   "/api",
-		},
+		Url: parsed,
 		client: &http.Client{
 			Jar: jar,
 		},
@@ -45,10 +42,11 @@ func (c *Client) generateRequest(method string, endpoint string, data []byte) (*
 	if data == nil {
 		data = []byte("")
 	}
-	req, err := http.NewRequest(method, c.Url.JoinPath(endpoint).String(), bytes.NewReader(data))
+	req, err := http.NewRequest(method, c.Url.String()+endpoint, bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("Accept-Language", "en-US")
 
 	return req, err
 }
@@ -69,14 +67,4 @@ func (c *Client) Request(method, endpoint string, body []byte) (Response, error)
 	defer resp.Body.Close()
 
 	return Response{resp, respBody}, err
-}
-
-func (c *Client) GetWarSeasons() (WarSeasons, error) {
-	resp, err := c.Request("GET", "", nil)
-	if err != nil {
-		return c.WarSeasons, err
-	}
-
-	err = json.Unmarshal(resp.bodyRead, &c.WarSeasons)
-	return c.WarSeasons, err
 }

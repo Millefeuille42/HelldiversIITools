@@ -2,41 +2,17 @@ package main
 
 import (
 	"Helldivers2Tools/pkg/api/redisCache"
-	"Helldivers2Tools/pkg/shared/helldivers"
+	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"Helldivers2Tools/pkg/shared/utils"
 	"github.com/gofiber/fiber/v3"
 	"log"
 )
 
-func getWarSeasons(c fiber.Ctx) error {
-	warSeasons, err := redisCache.GetWarSeasons()
+// feedHandler: returns: lib.NewsMessage
+func feedHandler(c fiber.Ctx) error {
+	feed, err := redisCache.GetNewsMessage()
 	if err != nil {
-		warSeasons, err = helldivers.Client.GetWarSeasons()
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
-		err := redisCache.SetWarSeasons(warSeasons)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
-	}
-
-	return c.JSON(warSeasons)
-}
-
-func getFeed(c fiber.Ctx) error {
-	warSeasonId := c.Params("war_id")
-
-	feed, err := redisCache.GetFeed(warSeasonId)
-	if err != nil {
-		feed, err = helldivers.Client.GetFeed(warSeasonId)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
-		err := redisCache.SetFeed(warSeasonId, feed)
+		feed, err = getLastMessage()
 		if err != nil {
 			log.Println(err)
 			return fiber.ErrInternalServerError
@@ -46,64 +22,70 @@ func getFeed(c fiber.Ctx) error {
 	return c.JSON(feed)
 }
 
-func getPlanets(c fiber.Ctx) error {
-	warSeasonId := c.Params("war_id")
-
-	planets, err := redisCache.GetPlanets(warSeasonId)
+// orderHandler: returns: lib.MajorOrder
+func orderHandler(c fiber.Ctx) error {
+	assignment, err := getAssignment()
 	if err != nil {
-		planets, err = helldivers.Client.GetPlanets(warSeasonId)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
-		err := redisCache.SetPlanets(warSeasonId, planets)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
+		log.Println(err)
+		return fiber.ErrInternalServerError
 	}
 
-	return c.JSON(planets)
+	tasks, err := constructTasks(assignment)
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(lib.MajorOrder{
+		Title:       assignment.Setting.OverrideTitle,
+		Briefing:    assignment.Setting.OverrideBrief,
+		Description: assignment.Setting.TaskDescription,
+		Tasks:       tasks,
+		Reward: lib.Reward{
+			Type:   lib.RewardType(assignment.Setting.Reward.Type),
+			Amount: assignment.Setting.Reward.Amount,
+		},
+	})
 }
 
-func getPlanet(c fiber.Ctx) error {
-	warSeasonId := c.Params("war_id")
-	planetId := utils.SafeAtoi(c.Params("planet_id"))
-
-	planet, err := redisCache.GetPlanet(warSeasonId, planetId)
+// planetsNameHandler: returns: lib.PlanetName
+func planetsNameHandler(c fiber.Ctx) error {
+	planets, err := getDiveHarderPlanets()
 	if err != nil {
-		planet, err = helldivers.Client.GetPlanet(warSeasonId, planetId)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
-		err := redisCache.SetPlanet(warSeasonId, planet)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	var planetsName []lib.PlanetName
+	for _, planet := range planets.Planets {
+		planetsName = append(planetsName, lib.PlanetName{
+			Index: planet.PlanetIndex,
+			Name:  planet.PlanetName,
+		})
+	}
+
+	return c.JSON(planetsName)
+}
+
+// planetHandler: returns: lib.Planet
+func planetHandler(c fiber.Ctx) error {
+	planetId := utils.SafeAtoi(c.Params("planet_id"))
+	planet, err := constructPlanet(planetId)
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
 	}
 
 	return c.JSON(planet)
 }
 
-func getPlanetStatus(c fiber.Ctx) error {
-	warSeasonId := c.Params("war_id")
-	planetId := utils.SafeAtoi(c.Params("planet_id"))
-
-	planetStatus, err := redisCache.GetPlanetStatus(warSeasonId, planetId)
+// galaxyStatsHandler: returns: lib.GalaxyStats
+func galaxyStatsHandler(c fiber.Ctx) error {
+	stats, err := getDiveHarderGalaxyStats()
 	if err != nil {
-		planetStatus, err = helldivers.Client.GetPlanetStatus(warSeasonId, planetId)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
-		err := redisCache.SetPlanetStatus(warSeasonId, planetStatus)
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
+		log.Println(err)
+		return fiber.ErrInternalServerError
 	}
 
-	return c.JSON(planetStatus)
+	return c.JSON(stats)
 }
