@@ -18,9 +18,8 @@ services:
       - HDII__API__REDIS_DB=${HDII__API__REDIS_DB-0}
       - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
       - HDII__API__REDIS_PORT=${HDII__API__REDIS_PORT-6379}
-      - HDII__API__REMOTE_HOST=${HDII__API__REMOTE_HOST-helldivers-2.fly.dev}
-      - HDII__API__REMOTE_PORT=${HDII__API__REMOTE_PORT-443}
-      - HDII__API__REMOTE_SCHEME=${HDII__API__REMOTE_SCHEME-https}
+      - HDII__API__HELLDIVERS_API=${HDII__API__REMOTE_HOST-https://api.live.prod.thehelldiversgame.com/api}
+      - HDII__API__DIVEHARDER_API=${HDII__API__DIVEHARDER_API-https://api.diveharder.com}
     expose:
       - 3000
   bot:
@@ -32,9 +31,7 @@ services:
     depends_on:
       - api
     environment:
-      - HDII__BOT__API_HOST=${HDII__BOT__API_HOST-api}
-      - HDII__BOT__API_PORT=${HDII__BOT__API_PORT-3000}
-      - HDII__BOT__API_SCHEME=${HDII__BOT__API_SCHEME-http}
+      - HDII__BOT__API=${HDII__BOT__API-http://api:3000/api}
       - HDII__BOT__DB_DRIVER=${HDII__BOT_DB_DRIVER-}
       - HDII__BOT__DB_DSN=${HDII__BOT_DB_DSN-}
       - HDII__BOT__TOKEN=${HDII__BOT_TOKEN}
