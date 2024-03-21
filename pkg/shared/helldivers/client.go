@@ -4,4 +4,6 @@ import (
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 )
 
-var Client *lib.Client
+var HDClient *lib.Client
+var GoDiversClient *lib.Client
+var DiveHarderClient *lib.Client
