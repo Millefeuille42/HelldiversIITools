@@ -46,6 +46,7 @@ func main() {
 		DB:         utils.SafeAtoi(os.Getenv("HDII__API__REDIS_DB")),
 		ClientName: "HDII-API",
 	})
+	defer redisCache.Client.Close()
 
 	app := fiber.New()
 	app.Use(logger.New())

@@ -29,7 +29,7 @@ func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	newsSplit := strings.Split(newsMessage.Message, "\n")
 	if len(newsSplit) > 1 {
 		newsTitle = newsSplit[0]
-		message = newsSplit[1]
+		message = strings.Join(newsSplit[1:], "\n")
 	}
 
 	// TODO Add language choice

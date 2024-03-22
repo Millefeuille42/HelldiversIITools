@@ -1,0 +1,16 @@
+FROM golang:1.20-alpine3.18
+
+RUN apk add gcc g++
+
+RUN mkdir /Helldivers2Tools
+RUN mkdir /pkg
+
+ADD cmd/updater /Helldivers2Tools/cmd
+ADD pkg/shared /Helldivers2Tools/pkg/shared
+ADD go.mod /Helldivers2Tools/go.mod
+ADD go.sum /Helldivers2Tools/go.sum
+
+WORKDIR /Helldivers2Tools
+RUN CGO_ENABLED=1 GOOS=linux go install ./cmd
+
+CMD cmd

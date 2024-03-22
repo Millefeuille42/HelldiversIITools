@@ -31,9 +31,28 @@ services:
     depends_on:
       - api
     environment:
+      - HDII__API__REDIS_DB=${HDII__API__REDIS_DB-0}
+      - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
+      - HDII__API__REDIS_PORT=${HDII__API__REDIS_PORT-6379}
       - HDII__BOT__API=${HDII__BOT__API-http://api:3000/api}
       - HDII__BOT__DB_DRIVER=${HDII__BOT_DB_DRIVER-}
       - HDII__BOT__DB_DSN=${HDII__BOT_DB_DSN-}
       - HDII__BOT__TOKEN=${HDII__BOT_TOKEN}
     volumes:
       - ${HDII__BOT__VOLUME_PATH_HOST}:${HDII__BOT__VOLUME_PATH_CONTAINER}
+  updater:
+    build:
+      context: .
+      dockerfile: Dockerfile_updater
+    image: hdii_tools__updater
+    restart: always
+    depends_on:
+      - api
+      - redis
+    environment:
+      - HDII__API__REDIS_DB=${HDII__API__REDIS_DB-0}
+      - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
+      - HDII__API__REDIS_PORT=${HDII__API__REDIS_PORT-6379}
+      - HDII__BOT__API=${HDII__BOT__API-http://api:3000/api}
+      - HDII__UPDATER__INFLUXDB__URL=${HDII__UPDATER__INFLUXDB__URL}
+      - HDII__UPDATER__INFLUXDB__TOKEN=${HDII__UPDATER__INFLUXDB__TOKEN}

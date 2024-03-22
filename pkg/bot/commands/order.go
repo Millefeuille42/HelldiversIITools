@@ -66,7 +66,7 @@ func buildTaskProgress(task lib.Task) string {
 	return fmt.Sprintf("%s %s: %s", taskType, task.Target.Name, progress)
 }
 
-func buildOrderEmbed(order lib.MajorOrder) *discordgo.MessageEmbed {
+func BuildOrderEmbed(order lib.MajorOrder) *discordgo.MessageEmbed {
 	ret := &discordgo.MessageEmbed{
 		Type: "rich",
 		// TODO add reward image
@@ -127,7 +127,7 @@ func orderCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			Content:    "",
 			Components: buildOrderComponents(order),
 			Embeds: []*discordgo.MessageEmbed{
-				buildOrderEmbed(order),
+				BuildOrderEmbed(order),
 			},
 			AllowedMentions: nil,
 			Choices:         nil,

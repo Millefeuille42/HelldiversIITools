@@ -14,7 +14,9 @@ func PopulateCommandMap() {
 	commandMap["planet"] = planetCommandHandler
 	commandMap["galaxy"] = galaxyCommandHandler
 	commandMap["order"] = orderCommandHandler
+	commandMap["channel"] = channelCommandHandler
 
+	componentMap["channel_select"] = channelSelectComponentHandler
 	componentMap["planet_button"] = planetComponentHandler
 }
 

@@ -24,7 +24,7 @@ var imageMap = map[string]string{
 
 var planets []lib.PlanetName
 
-func buildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
+func BuildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 	ret := &discordgo.MessageEmbed{
 		Type:  "rich",
 		Color: colorMap[planet.CurrentOwner],
@@ -169,7 +169,7 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 			Content:    "",
 			Components: buildPlanetComponent(selectedPlanet),
 			Embeds: []*discordgo.MessageEmbed{
-				buildPlanetEmbed(selectedPlanet),
+				BuildPlanetEmbed(selectedPlanet),
 			},
 			AllowedMentions: nil,
 			Choices:         nil,
@@ -197,7 +197,7 @@ func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate
 			Content:    "",
 			Components: buildPlanetComponent(planet),
 			Embeds: []*discordgo.MessageEmbed{
-				buildPlanetEmbed(planet),
+				BuildPlanetEmbed(planet),
 			},
 			AllowedMentions: nil,
 			Choices:         nil,

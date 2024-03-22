@@ -20,7 +20,7 @@ type DiveHarderPlanet struct {
 	WaypointNames   string  `json:"waypointNames"`
 	Health          int     `json:"health"`
 	MaxHealth       int     `json:"maxHealth"`
-	Players         int     `json:"players"`
+	Players         int64   `json:"players"`
 	RegenPerSecond  float64 `json:"regenPerSecond"`
 }
 
@@ -32,12 +32,12 @@ type DiveHarderPlanetsResponse struct {
 type DiveHarderPlanetsActive struct {
 	PlanetIndex    int     `json:"planetIndex"`
 	PlanetName     string  `json:"planetName"`
-	RegenPerSecond int     `json:"regenPerSecond"`
-	RegenPerHour   int     `json:"regenPerHour"`
+	RegenPerSecond float64 `json:"regenPerSecond"`
+	RegenPerHour   float64 `json:"regenPerHour"`
 	Health         int     `json:"health"`
 	MaxHealth      int     `json:"maxHealth"`
 	LibPercent     float64 `json:"libPercent"`
-	Players        int     `json:"players"`
+	Players        int64   `json:"players"`
 	HEC            float64 `json:"HEC"`
 	MinPlayers     int     `json:"minPlayers"`
 	HoursComplete  float64 `json:"hoursComplete"`
@@ -49,36 +49,36 @@ type DiveHarderPlanetsActiveResponse struct {
 }
 
 type GalaxyStats struct {
-	MissionsWon        int   `json:"missionsWon"`
-	MissionsLost       int   `json:"missionsLost"`
+	MissionsWon        int64 `json:"missionsWon"`
+	MissionsLost       int64 `json:"missionsLost"`
 	MissionTime        int64 `json:"missionTime"`
 	BugKills           int64 `json:"bugKills"`
-	AutomatonKills     int   `json:"automatonKills"`
-	IlluminateKills    int   `json:"illuminateKills"`
+	AutomatonKills     int64 `json:"automatonKills"`
+	IlluminateKills    int64 `json:"illuminateKills"`
 	BulletsFired       int64 `json:"bulletsFired"`
 	BulletsHit         int64 `json:"bulletsHit"`
 	TimePlayed         int64 `json:"timePlayed"`
-	Deaths             int   `json:"deaths"`
-	Revives            int   `json:"revives"`
-	Friendlies         int   `json:"friendlies"`
+	Deaths             int64 `json:"deaths"`
+	Revives            int64 `json:"revives"`
+	Friendlies         int64 `json:"friendlies"`
 	MissionSuccessRate int   `json:"missionSuccessRate"`
 	Accuracy           int   `json:"accurracy"`
 }
 
 type PlanetStats struct {
 	PlanetIndex        int   `json:"planetIndex"`
-	MissionsWon        int   `json:"missionsWon"`
-	MissionsLost       int   `json:"missionsLost"`
+	MissionsWon        int64 `json:"missionsWon"`
+	MissionsLost       int64 `json:"missionsLost"`
 	MissionTime        int64 `json:"missionTime"`
-	BugKills           int   `json:"bugKills"`
-	AutomatonKills     int   `json:"automatonKills"`
-	IlluminateKills    int   `json:"illuminateKills"`
+	BugKills           int64 `json:"bugKills"`
+	AutomatonKills     int64 `json:"automatonKills"`
+	IlluminateKills    int64 `json:"illuminateKills"`
 	BulletsFired       int64 `json:"bulletsFired"`
 	BulletsHit         int64 `json:"bulletsHit"`
 	TimePlayed         int64 `json:"timePlayed"`
-	Deaths             int   `json:"deaths"`
-	Revives            int   `json:"revives"`
-	Friendlies         int   `json:"friendlies"`
+	Deaths             int64 `json:"deaths"`
+	Revives            int64 `json:"revives"`
+	Friendlies         int64 `json:"friendlies"`
 	MissionSuccessRate int   `json:"missionSuccessRate"`
 	Accuracy           int   `json:"accurracy"`
 }

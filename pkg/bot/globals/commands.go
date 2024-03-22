@@ -20,6 +20,10 @@ var DiscordCommands = []*discordgo.ApplicationCommand{
 		Description: "Get latest major order",
 	},
 	{
+		Name:        "channel",
+		Description: "Set channel for bot to post in",
+	},
+	{
 		Name:        "planet",
 		Description: "Get information about a planet",
 		Options: []*discordgo.ApplicationCommandOption{

@@ -8,9 +8,14 @@ import (
 	"Helldivers2Tools/pkg/bot/models"
 	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
+	"Helldivers2Tools/pkg/shared/redisEvent"
+	"Helldivers2Tools/pkg/shared/utils"
+	"encoding/json"
+	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/redis/go-redis/v9"
 	"log"
-	"time"
+	"os"
 )
 
 func setUpBot() *discordgo.Session {
@@ -78,11 +83,44 @@ func main() {
 		log.Fatal(err)
 	}
 
+	redisEvent.Context = redisEvent.NewContext()
+	redisEvent.Client = redisEvent.New(&redis.Options{
+		Addr:       os.Getenv("HDII__API__REDIS_HOST") + ":" + os.Getenv("HDII__API__REDIS_PORT"),
+		Password:   os.Getenv("HDII__API__REDIS_PASSWORD"),
+		DB:         utils.SafeAtoi(os.Getenv("HDII__API__REDIS_DB")),
+		ClientName: "HDII-BOT",
+	})
+	defer redisEvent.Client.Close()
+
 	routine()
 }
 
 func routine() {
+	sub := redisEvent.Client.Subscribe(redisEvent.Context, "events")
+	defer sub.Close()
 	for {
-		time.Sleep(time.Hour * 24)
+		data, err := sub.Receive(redisEvent.Context)
+		if err != nil || data == nil {
+			log.Println(err)
+			continue
+		}
+
+		switch msg := data.(type) {
+		case *redis.Subscription:
+			fmt.Println("subscribed to", msg.Channel)
+		case *redis.Message:
+			fmt.Println("received", msg.Payload, "from", msg.Channel)
+			var event redisEvent.Generic
+			err = json.Unmarshal([]byte(msg.Payload), &event)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			err = eventMap[event.Type]([]byte(event.Data))
+			if err != nil {
+				log.Println(err)
+			}
+		}
 	}
 }
