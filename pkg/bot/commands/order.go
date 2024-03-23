@@ -56,6 +56,8 @@ func buildTaskProgress(task lib.Task) string {
 	switch task.Type {
 	case lib.LiberateTaskType:
 		taskType = "Liberate"
+	case lib.ControlTaskType:
+		taskType = "Control"
 	}
 
 	progress := "⚠️"

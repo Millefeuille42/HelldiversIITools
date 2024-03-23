@@ -57,6 +57,7 @@ type TaskType int
 
 const (
 	LiberateTaskType TaskType = 11
+	ControlTaskType  TaskType = 13
 )
 
 type TaskValueType int
