@@ -126,7 +126,7 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 	optionMap := parseOptions(i.ApplicationCommandData().Options)
 
 	if _, ok := optionMap["name"]; !ok {
-		interactionSendError(s, i, "No planet provided", discordgo.MessageFlagsEphemeral)
+		interactionSendFollowupError(s, i, "No planet provided", discordgo.MessageFlagsEphemeral)
 		return
 	}
 
@@ -145,7 +145,7 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 	}
 
 	if err != nil {
-		interactionSendError(s, i, "Error fetching planets", discordgo.MessageFlagsEphemeral)
+		interactionSendFollowupError(s, i, "Error fetching planets", discordgo.MessageFlagsEphemeral)
 		return
 	}
 
@@ -154,7 +154,7 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		if strings.ToLower(planet.Name) == strings.ToLower(optionMap["name"].StringValue()) {
 			selectedPlanet, err = helldivers.GoDiversClient.GetPlanet(planet.Index)
 			if err != nil {
-				interactionSendError(s, i, "Planet not found", discordgo.MessageFlagsEphemeral)
+				interactionSendFollowupError(s, i, "Planet not found", discordgo.MessageFlagsEphemeral)
 				return
 			}
 			break
@@ -186,13 +186,14 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	err := interactionSendDefer(s, i)
 	if err != nil {
+		interactionSendError(s, i, "An error ocurred while sending message", 0)
 		return
 	}
 
 	id := strings.Split(i.MessageComponentData().CustomID, "-")[1]
 	planet, err := helldivers.GoDiversClient.GetPlanet(utils.SafeAtoi(id))
 	if err != nil {
-		interactionSendError(s, i, "Planet not found", discordgo.MessageFlagsEphemeral)
+		interactionSendFollowupError(s, i, "Planet not found", discordgo.MessageFlagsEphemeral)
 		return
 	}
 

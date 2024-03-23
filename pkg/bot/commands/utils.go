@@ -5,6 +5,10 @@ import (
 	"log"
 )
 
+func interactionSendFollowupError(s *discordgo.Session, i *discordgo.InteractionCreate, message string, flags discordgo.MessageFlags) {
+	_, _ = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{Content: message, Flags: flags})
+}
+
 func interactionSendDefer(s *discordgo.Session, i *discordgo.InteractionCreate) error {
 	return s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,

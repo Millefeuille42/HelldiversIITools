@@ -18,6 +18,10 @@ import (
 	"os"
 )
 
+func setBotStatus(status string) error {
+	return globals.Bot.UpdateListeningStatus(status)
+}
+
 func setUpBot() *discordgo.Session {
 	discordBot, err := discordgo.New("Bot " + globals.BotToken)
 	if err != nil {
@@ -81,6 +85,13 @@ func main() {
 	helldivers.GoDiversClient, err = lib.New(globals.ApiUrl)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	newsMessage, err := helldivers.GoDiversClient.GetNewsMessage()
+	newsTitle, _ := lib.SplitNewsMessage(newsMessage)
+	err = setBotStatus(newsTitle)
+	if err != nil {
+		log.Println(err)
 	}
 
 	redisEvent.Context = redisEvent.NewContext()

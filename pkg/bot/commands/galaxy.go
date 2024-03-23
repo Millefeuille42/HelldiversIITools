@@ -56,6 +56,7 @@ func buildGalaxyEmbed(stats lib.GalaxyStats) *discordgo.MessageEmbed {
 func galaxyCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	err := interactionSendDefer(s, i)
 	if err != nil {
+		interactionSendError(s, i, "An error ocurred while sending message", 0)
 		return
 	}
 
@@ -63,14 +64,14 @@ func galaxyCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 	_, err = guild.GetGuildByGuildId(i.GuildID)
 	if err != nil {
 		log.Println(err)
-		interactionSendError(s, i, "Error getting galaxy stats", 0)
+		interactionSendFollowupError(s, i, "Error getting galaxy stats", 0)
 		return
 	}
 
 	stats, err := helldivers.GoDiversClient.GetGalaxyStats()
 	if err != nil {
 		log.Println(err)
-		interactionSendError(s, i, "Error getting galaxy stats", 0)
+		interactionSendFollowupError(s, i, "Error getting galaxy stats", 0)
 		return
 	}
 

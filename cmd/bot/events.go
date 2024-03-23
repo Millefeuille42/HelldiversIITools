@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
-	"strings"
 )
 
 var eventMap = map[redisEvent.EventType]func([]byte) error{
@@ -45,12 +44,10 @@ func handleNewMessage(event []byte) error {
 		return errors.New("invalid data type")
 	}
 
-	newsTitle := "New Message"
-	message := newMessage.Message
-	newsSplit := strings.Split(newMessage.Message, "\n")
-	if len(newsSplit) > 1 {
-		newsTitle = newsSplit[0]
-		message = strings.Join(newsSplit[1:], "\n")
+	newsTitle, message := lib.SplitNewsMessage(newMessage)
+	err = setBotStatus(newsTitle)
+	if err != nil {
+		log.Println(err)
 	}
 
 	return streamEmbed(&discordgo.MessageEmbed{

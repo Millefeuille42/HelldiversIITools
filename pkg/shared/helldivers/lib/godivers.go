@@ -3,6 +3,7 @@ package lib
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 type Planet struct {
@@ -76,6 +77,18 @@ type MajorOrder struct {
 	Description string `json:"description"`
 	Tasks       []Task `json:"tasks"`
 	Reward      Reward `json:"reward"`
+}
+
+func SplitNewsMessage(news NewsMessage) (title, message string) {
+	title = "New Message"
+	message = news.Message
+	newsSplit := strings.Split(news.Message, "\n")
+	if len(newsSplit) > 1 {
+		title = newsSplit[0]
+		message = strings.Join(newsSplit[1:], "\n")
+	}
+
+	return title, message
 }
 
 func (c *Client) GetNewsMessage() (NewsMessage, error) {

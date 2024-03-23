@@ -108,6 +108,7 @@ func BuildOrderEmbed(order lib.MajorOrder) *discordgo.MessageEmbed {
 func orderCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	err := interactionSendDefer(s, i)
 	if err != nil {
+		interactionSendError(s, i, "An error ocurred while sending message", 0)
 		return
 	}
 
@@ -115,14 +116,14 @@ func orderCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	_, err = guild.GetGuildByGuildId(i.GuildID)
 	if err != nil {
 		log.Println(err)
-		interactionSendError(s, i, "Error getting order", 0)
+		interactionSendFollowupError(s, i, "Error getting order", 0)
 		return
 	}
 
 	order, err := helldivers.GoDiversClient.GetMajorOrder()
 	if err != nil {
 		log.Println(err)
-		interactionSendError(s, i, "Error getting order", 0)
+		interactionSendFollowupError(s, i, "Error getting order", 0)
 		return
 	}
 

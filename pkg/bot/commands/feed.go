@@ -3,6 +3,7 @@ package commands
 import (
 	"Helldivers2Tools/pkg/bot/models"
 	"Helldivers2Tools/pkg/shared/helldivers"
+	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
@@ -11,6 +12,7 @@ import (
 func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	err := interactionSendDefer(s, i)
 	if err != nil {
+		interactionSendError(s, i, "An error ocurred while sending message", 0)
 		return
 	}
 
@@ -18,19 +20,18 @@ func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	_, err = guild.GetGuildByGuildId(i.GuildID)
 	if err != nil {
 		log.Println(err)
-		interactionSendError(s, i, "Error getting feed", 0)
+		interactionSendFollowupError(s, i, "Error getting feed", 0)
 		return
 	}
 
 	newsMessage, err := helldivers.GoDiversClient.GetNewsMessage()
 	if err != nil {
 		log.Println(err)
-		interactionSendError(s, i, "Error getting feed", 0)
+		interactionSendFollowupError(s, i, "Error getting feed", 0)
 		return
 	}
 
-	newsTitle := "New Message"
-	message := newsMessage.Message
+	newsTitle, message := lib.SplitNewsMessage(newsMessage)
 	newsSplit := strings.Split(newsMessage.Message, "\n")
 	if len(newsSplit) > 1 {
 		newsTitle = newsSplit[0]
