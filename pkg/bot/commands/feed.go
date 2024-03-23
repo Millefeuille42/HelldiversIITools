@@ -9,8 +9,13 @@ import (
 )
 
 func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	err := interactionSendDefer(s, i)
+	if err != nil {
+		return
+	}
+
 	guild := models.GuildModel{}
-	_, err := guild.GetGuildByGuildId(i.GuildID)
+	_, err = guild.GetGuildByGuildId(i.GuildID)
 	if err != nil {
 		log.Println(err)
 		interactionSendError(s, i, "Error getting feed", 0)
@@ -33,21 +38,13 @@ func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// TODO Add language choice
-	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: "",
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Type:        "rich",
-					Title:       newsTitle,
-					Description: message,
-				},
+	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Type:        "rich",
+				Title:       newsTitle,
+				Description: message,
 			},
-			AllowedMentions: nil,
-			Choices:         nil,
-			CustomID:        "",
-			Title:           "",
 		},
 	})
 

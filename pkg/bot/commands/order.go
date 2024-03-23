@@ -106,8 +106,13 @@ func BuildOrderEmbed(order lib.MajorOrder) *discordgo.MessageEmbed {
 }
 
 func orderCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	err := interactionSendDefer(s, i)
+	if err != nil {
+		return
+	}
+
 	guild := models.GuildModel{}
-	_, err := guild.GetGuildByGuildId(i.GuildID)
+	_, err = guild.GetGuildByGuildId(i.GuildID)
 	if err != nil {
 		log.Println(err)
 		interactionSendError(s, i, "Error getting order", 0)
@@ -121,18 +126,10 @@ func orderCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content:    "",
-			Components: buildOrderComponents(order),
-			Embeds: []*discordgo.MessageEmbed{
-				BuildOrderEmbed(order),
-			},
-			AllowedMentions: nil,
-			Choices:         nil,
-			CustomID:        "",
-			Title:           "",
+	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+		Components: buildOrderComponents(order),
+		Embeds: []*discordgo.MessageEmbed{
+			BuildOrderEmbed(order),
 		},
 	})
 

@@ -184,6 +184,11 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 }
 
 func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	err := interactionSendDefer(s, i)
+	if err != nil {
+		return
+	}
+
 	id := strings.Split(i.MessageComponentData().CustomID, "-")[1]
 	planet, err := helldivers.GoDiversClient.GetPlanet(utils.SafeAtoi(id))
 	if err != nil {
@@ -191,18 +196,10 @@ func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate
 		return
 	}
 
-	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content:    "",
-			Components: buildPlanetComponent(planet),
-			Embeds: []*discordgo.MessageEmbed{
-				BuildPlanetEmbed(planet),
-			},
-			AllowedMentions: nil,
-			Choices:         nil,
-			CustomID:        "",
-			Title:           "",
+	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+		Components: buildPlanetComponent(planet),
+		Embeds: []*discordgo.MessageEmbed{
+			BuildPlanetEmbed(planet),
 		},
 	})
 

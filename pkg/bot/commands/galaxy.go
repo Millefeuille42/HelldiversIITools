@@ -54,8 +54,13 @@ func buildGalaxyEmbed(stats lib.GalaxyStats) *discordgo.MessageEmbed {
 }
 
 func galaxyCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	err := interactionSendDefer(s, i)
+	if err != nil {
+		return
+	}
+
 	guild := models.GuildModel{}
-	_, err := guild.GetGuildByGuildId(i.GuildID)
+	_, err = guild.GetGuildByGuildId(i.GuildID)
 	if err != nil {
 		log.Println(err)
 		interactionSendError(s, i, "Error getting galaxy stats", 0)
@@ -69,18 +74,9 @@ func galaxyCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		return
 	}
 
-	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content:    "",
-			Components: nil,
-			Embeds: []*discordgo.MessageEmbed{
-				buildGalaxyEmbed(stats),
-			},
-			AllowedMentions: nil,
-			Choices:         nil,
-			CustomID:        "",
-			Title:           "",
+	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			buildGalaxyEmbed(stats),
 		},
 	})
 
