@@ -55,6 +55,7 @@ func main() {
 	apiGroup.Get("/feed", feedHandler)
 	apiGroup.Get("/order", orderHandler)
 	apiGroup.Get("/galaxy", galaxyStatsHandler)
+	apiGroup.Get("/campaigns", campaignsHandler)
 
 	planetsGroup := apiGroup.Group("/planets")
 	planetsGroup.Get("/", planetsNameHandler)

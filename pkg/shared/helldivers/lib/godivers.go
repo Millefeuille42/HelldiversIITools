@@ -145,3 +145,14 @@ func (c *Client) GetGalaxyStats() (GalaxyStats, error) {
 	err = json.Unmarshal(resp.bodyRead, &stats)
 	return stats, err
 }
+
+func (c *Client) GetCampaigns() ([]Campaign, error) {
+	resp, err := c.Request("GET", GoDiversCampaignsRoute, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var campaigns []Campaign
+	err = json.Unmarshal(resp.bodyRead, &campaigns)
+	return campaigns, err
+}

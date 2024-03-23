@@ -109,3 +109,18 @@ func GetAssignment() (lib.Assignment, error) {
 
 	return assignment, nil
 }
+
+func GetStatus() (lib.Status, error) {
+	data, err := Client.Get(Context, "status").Bytes()
+	if err != nil {
+		return lib.Status{}, err
+	}
+
+	var status lib.Status
+	err = json.Unmarshal(data, &status)
+	if err != nil {
+		return lib.Status{}, err
+	}
+
+	return status, nil
+}

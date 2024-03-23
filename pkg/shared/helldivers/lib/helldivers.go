@@ -6,6 +6,39 @@ import (
 	"fmt"
 )
 
+type Campaign struct {
+	Id          int `json:"id"`
+	PlanetIndex int `json:"planetIndex"`
+	Type        int `json:"type"`
+	Count       int `json:"count"`
+}
+
+type Status struct {
+	WarId            int     `json:"warId"`
+	Time             int     `json:"time"`
+	ImpactMultiplier float64 `json:"impactMultiplier"`
+	StoryBeatId32    int     `json:"storyBeatId32"`
+	PlanetStatus     []struct {
+		Index          int     `json:"index"`
+		Owner          int     `json:"owner"`
+		Health         int     `json:"health"`
+		RegenPerSecond float64 `json:"regenPerSecond"`
+		Players        int     `json:"players"`
+	} `json:"planetStatus"`
+	PlanetAttacks []struct {
+		Source int `json:"source"`
+		Target int `json:"target"`
+	} `json:"planetAttacks"`
+	Campaigns                   []Campaign    `json:"campaigns"`
+	CommunityTargets            []interface{} `json:"communityTargets"` // TODO Get format of inline and below
+	JointOperations             []interface{} `json:"jointOperations"`
+	PlanetEvents                []interface{} `json:"planetEvents"`
+	PlanetActiveEffects         []interface{} `json:"planetActiveEffects"`
+	ActiveElectionPolicyEffects []interface{} `json:"activeElectionPolicyEffects"`
+	GlobalEvents                []interface{} `json:"globalEvents"`
+	SuperEarthWarResults        []interface{} `json:"superEarthWarResults"`
+}
+
 type NewsMessage struct {
 	Id        int           `json:"id"`
 	Published int           `json:"published"`
@@ -80,4 +113,15 @@ func (c *Client) GetHelldiversAssignment(warId string) (Assignment, error) {
 		return Assignment{}, errors.New("no assignment")
 	}
 	return assignment[0], err
+}
+
+func (c *Client) GetHelldiversStatus(warId string) (Status, error) {
+	resp, err := c.Request("GET", fmt.Sprintf(HelldiversStatusRoute, warId), nil)
+	if err != nil {
+		return Status{}, err
+	}
+
+	var status Status
+	err = json.Unmarshal(resp.bodyRead, &status)
+	return status, err
 }

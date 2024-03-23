@@ -65,3 +65,11 @@ func SetAssignment(assignment lib.Assignment) error {
 	}
 	return Set("assignment", val, time.Minute*30)
 }
+
+func SetStatus(status lib.Status) error {
+	val, err := json.Marshal(status)
+	if err != nil {
+		return err
+	}
+	return Set("status", val, time.Minute*10)
+}

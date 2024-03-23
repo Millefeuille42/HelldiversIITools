@@ -97,6 +97,18 @@ func getAssignment() (lib.Assignment, error) {
 	return assignment, err
 }
 
+func getStatus() (lib.Status, error) {
+	status, err := redisCache.GetStatus()
+	if err != nil {
+		status, err = helldivers.HDClient.GetHelldiversStatus(warId)
+		if err != nil {
+			return lib.Status{}, err
+		}
+		err = redisCache.SetStatus(status)
+	}
+	return status, err
+}
+
 func searchInDiveHarderPlanets(planets lib.DiveHarderPlanetsResponse, id int) (lib.DiveHarderPlanet, error) {
 	for i := range planets.Planets {
 		if planets.Planets[i].PlanetIndex == id {

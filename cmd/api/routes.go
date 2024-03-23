@@ -89,3 +89,14 @@ func galaxyStatsHandler(c fiber.Ctx) error {
 
 	return c.JSON(stats)
 }
+
+// campaignsHandler: returns: []lib.Campaign
+func campaignsHandler(c fiber.Ctx) error {
+	status, err := getStatus()
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(status.Campaigns)
+}
