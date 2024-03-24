@@ -35,9 +35,9 @@ services:
       - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
       - HDII__API__REDIS_PORT=${HDII__API__REDIS_PORT-6379}
       - HDII__BOT__API=${HDII__BOT__API-http://api:3000/api}
-      - HDII__BOT__DB_DRIVER=${HDII__BOT_DB_DRIVER-}
-      - HDII__BOT__DB_DSN=${HDII__BOT_DB_DSN-}
-      - HDII__BOT__TOKEN=${HDII__BOT_TOKEN}
+      - HDII__BOT__DB_DRIVER=${HDII__BOT__DB_DRIVER-}
+      - HDII__BOT__DB_DSN=${HDII__BOT__DB_DSN-}
+      - HDII__BOT__TOKEN=${HDII__BOT__TOKEN}
     volumes:
       - ${HDII__BOT__VOLUME_PATH_HOST}:${HDII__BOT__VOLUME_PATH_CONTAINER}
   updater:
