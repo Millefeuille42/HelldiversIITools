@@ -5,8 +5,13 @@ import (
 	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"Helldivers2Tools/pkg/shared/utils"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/compress"
+	"github.com/gofiber/fiber/v3/middleware/healthcheck"
+	"github.com/gofiber/fiber/v3/middleware/helmet"
 	"github.com/gofiber/fiber/v3/middleware/logger"
+	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/redis/go-redis/v9"
 	"log"
 	"os"
@@ -48,9 +53,16 @@ func main() {
 	})
 	defer redisCache.Client.Close()
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		JSONEncoder: json.Marshal,
+		JSONDecoder: json.Unmarshal,
+	})
+	app.Use(recover.New())
 	app.Use(logger.New())
+	app.Use(helmet.New())
+	app.Get("/health", healthcheck.NewHealthChecker())
 
+	app.Use(compress.New())
 	apiGroup := app.Group("/api")
 	apiGroup.Get("/feed", feedHandler)
 	apiGroup.Get("/order", orderHandler)
