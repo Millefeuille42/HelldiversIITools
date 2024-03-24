@@ -104,6 +104,11 @@ func BuildOrderEmbed(order lib.MajorOrder) *discordgo.MessageEmbed {
 		})
 	}
 
+	ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
+		Name:   fmt.Sprintf("Ends <t:%d:R>", order.EndsAt.Unix()),
+		Inline: false,
+	})
+
 	return ret
 }
 

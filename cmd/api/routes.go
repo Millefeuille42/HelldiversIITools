@@ -6,6 +6,7 @@ import (
 	"Helldivers2Tools/pkg/shared/utils"
 	"github.com/gofiber/fiber/v3"
 	"log"
+	"time"
 )
 
 // feedHandler: returns: lib.NewsMessage
@@ -45,6 +46,7 @@ func orderHandler(c fiber.Ctx) error {
 			Type:   lib.RewardType(assignment.Setting.Reward.Type),
 			Amount: assignment.Setting.Reward.Amount,
 		},
+		EndsAt: time.Now().Add(time.Second * time.Duration(assignment.ExpiresIn)),
 	})
 }
 

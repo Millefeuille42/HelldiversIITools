@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Planet struct {
@@ -73,11 +74,12 @@ type Task struct {
 }
 
 type MajorOrder struct {
-	Title       string `json:"title"`
-	Briefing    string `json:"briefing"`
-	Description string `json:"description"`
-	Tasks       []Task `json:"tasks"`
-	Reward      Reward `json:"reward"`
+	Title       string    `json:"title"`
+	Briefing    string    `json:"briefing"`
+	Description string    `json:"description"`
+	Tasks       []Task    `json:"tasks"`
+	Reward      Reward    `json:"reward"`
+	EndsAt      time.Time `json:"ends_at"`
 }
 
 func SplitNewsMessage(news NewsMessage) (title, message string) {
