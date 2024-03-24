@@ -129,7 +129,7 @@ func orderCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
 		Components: buildOrderComponents(order),
 		Embeds: []*discordgo.MessageEmbed{
 			BuildOrderEmbed(order),

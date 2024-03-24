@@ -197,7 +197,7 @@ func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate
 		return
 	}
 
-	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
 		Components: buildPlanetComponent(planet),
 		Embeds: []*discordgo.MessageEmbed{
 			BuildPlanetEmbed(planet),

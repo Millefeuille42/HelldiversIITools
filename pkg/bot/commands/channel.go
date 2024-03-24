@@ -45,23 +45,26 @@ func channelSelectComponentHandler(s *discordgo.Session, i *discordgo.Interactio
 }
 
 func channelCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	err := interactionSendDefer(s, i)
+	if err != nil {
+		interactionSendError(s, i, "An error ocurred while sending message", 0)
+		return
+	}
+
 	onePointer := 1
-	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Flags: discordgo.MessageFlagsEphemeral,
-			Components: []discordgo.MessageComponent{
-				discordgo.ActionsRow{
-					Components: []discordgo.MessageComponent{
-						discordgo.SelectMenu{
-							MenuType:    discordgo.ChannelSelectMenu,
-							CustomID:    "channel_select",
-							Placeholder: "Select a channel",
-							MinValues:   &onePointer,
-							MaxValues:   1,
-							ChannelTypes: []discordgo.ChannelType{
-								discordgo.ChannelTypeGuildText,
-							},
+	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
+		Flags: discordgo.MessageFlagsEphemeral,
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.SelectMenu{
+						MenuType:    discordgo.ChannelSelectMenu,
+						CustomID:    "channel_select",
+						Placeholder: "Select a channel",
+						MinValues:   &onePointer,
+						MaxValues:   1,
+						ChannelTypes: []discordgo.ChannelType{
+							discordgo.ChannelTypeGuildText,
 						},
 					},
 				},

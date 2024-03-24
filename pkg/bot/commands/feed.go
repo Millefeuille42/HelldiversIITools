@@ -39,7 +39,7 @@ func feedCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// TODO Add language choice
-	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				Type:        "rich",

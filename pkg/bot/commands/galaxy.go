@@ -75,7 +75,7 @@ func galaxyCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		return
 	}
 
-	_, err = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
+	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
 		Embeds: []*discordgo.MessageEmbed{
 			buildGalaxyEmbed(stats),
 		},

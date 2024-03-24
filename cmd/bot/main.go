@@ -53,18 +53,6 @@ func populateDatabase() error {
 	return nil
 }
 
-// Post V1
-
-// TODO add language support
-
-// Events
-
-// TODO reverse helldivers API for event-based elements
-
-// TODO write an updater program that will notify of new information
-//  - new feed element
-//  - change of planet status
-
 func main() {
 	var err error
 

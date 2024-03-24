@@ -66,7 +66,7 @@ func handleNewOrder(event []byte) error {
 	}
 
 	embed := commands.BuildOrderEmbed(newOrder)
-	embed.Title = "NEW " + embed.Title
+	embed.Title = "NEW MAJOR ORDER"
 	embed.Color = 15616811
 	return streamEmbed(embed)
 }
