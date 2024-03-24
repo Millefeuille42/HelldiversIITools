@@ -4,7 +4,7 @@
 
 Welcome, Helldiver! You're about to deploy the Helldivers II Discord Bot, your trusty companion in the ongoing war against the enemies of Super Earth. This bot is a crucial asset for staying updated on mission-critical information right within your Discord server. Here's your deployment manual:
 
-The Helldivers II Discord Bot is accessible at [insert_url_here] for immediate deployment.
+The Helldivers II Discord Bot is accessible at [this url](https://discord.com/oauth2/authorize?client_id=1219964573231091713&permissions=277025705024&scope=bot) for immediate deployment.
 Alternatively, it can be self-deployed using the provided resources.
 
 ## Mission Objectives
