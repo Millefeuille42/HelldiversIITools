@@ -140,7 +140,11 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	defer influx.Client.Close()
+	defer func() {
+		if influx.Client != nil {
+			influx.Client.Close()
+		}
+	}()
 
 	newsTicker := time.Tick(time.Minute * 1)
 	orderTicker := time.Tick(time.Minute * 1)
