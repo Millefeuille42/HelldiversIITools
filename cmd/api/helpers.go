@@ -177,7 +177,7 @@ func constructPlanet(planetId int) (lib.Planet, error) {
 	}
 
 	if planet.MaxHealth != 0 && planet.Health != 0 {
-		planet.LiberationPercent = 100.0 - (100.0 / float64(planet.MaxHealth*planet.Health))
+		planet.LiberationPercent = 100.0 - 100.0*float64(planet.Health)/float64(planet.MaxHealth)
 	}
 
 	planet.Attacks = searchPlanetAttacks(status.PlanetAttacks, planetId)
