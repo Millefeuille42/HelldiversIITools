@@ -1,5 +1,10 @@
 package globals
 
+import (
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+)
+
 var (
 	DatabaseDriver = ""
 	DatabaseDSN    = ""
@@ -7,4 +12,6 @@ var (
 	BotToken = ""
 
 	ApiUrl = ""
+
+	NumberPrinter = message.NewPrinter(language.English)
 )

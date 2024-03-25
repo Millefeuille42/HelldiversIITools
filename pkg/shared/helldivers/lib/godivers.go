@@ -45,8 +45,8 @@ type Planet struct {
 	RegenPerSecond    float64 `json:"regen_per_second"`
 	LiberationPercent float64 `json:"liberation_percent"`
 
-	Owner        int `json:"owner"`
-	InitialOwner int `json:"initial_owner"`
+	Owner        Faction `json:"owner"`
+	InitialOwner Faction `json:"initial_owner"`
 
 	Players            int64 `json:"players"`
 	MissionsWon        int64 `json:"missions_won"`

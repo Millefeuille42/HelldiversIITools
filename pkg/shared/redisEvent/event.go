@@ -74,7 +74,7 @@ func (n NewPlanetEvent) ToJson() ([]byte, error) {
 }
 
 func (n NewPlanetEvent) GetType() EventType {
-	if n.Planet.CurrentOwner != "Humans" {
+	if n.Planet.Owner != lib.Humans {
 		return PlanetLostEventType
 	}
 	return PlanetLiberatedEventType

@@ -7,16 +7,15 @@ import (
 )
 
 func WritePlanet(planet lib.Planet) error {
-	if planet.LibPercent == 0 {
+	if planet.LiberationPercent == 0 {
 		return nil
 	}
 
 	point := influxdb3.NewPointWithMeasurement("planet").
-		SetTag("name", planet.PlanetName).
-		SetStringField("CurrentOwner", planet.CurrentOwner).
-		SetDoubleField("LibPercent", planet.LibPercent).
+		SetTag("name", planet.Name).
+		SetDoubleField("LibPercent", planet.LiberationPercent).
 		SetIntegerField("AutomatonKills", planet.AutomatonKills).
-		SetIntegerField("BugKills", planet.BugKills).
+		SetIntegerField("BugKills", planet.TerminidKills).
 		SetIntegerField("IlluminateKills", planet.IlluminateKills).
 		SetIntegerField("MissionsLost", planet.MissionsLost).
 		SetIntegerField("MissionsWon", planet.MissionsWon).

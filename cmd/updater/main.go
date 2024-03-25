@@ -57,14 +57,18 @@ func checkOrder(previous lib.MajorOrder) lib.MajorOrder {
 
 func checkPlanets(previous []lib.Planet) []lib.Planet {
 	for index, prevPlanet := range previous {
-		planet, err := helldivers.GoDiversClient.GetPlanet(prevPlanet.PlanetIndex)
+		planet, err := helldivers.GoDiversClient.GetPlanet(prevPlanet.Index)
+
+		if planet.Owner == 0 {
+			continue
+		}
 
 		err = influx.WritePlanet(planet)
 		if err != nil {
 			log.Println(err)
 		}
 
-		if planet.CurrentOwner == prevPlanet.CurrentOwner {
+		if planet.Owner == prevPlanet.Owner {
 			continue
 		}
 
