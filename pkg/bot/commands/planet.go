@@ -64,6 +64,12 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		return
 	}
 
+	err = interactionSendDefer(s, i)
+	if err != nil {
+		interactionSendError(s, i, "An error ocurred while sending message", 0)
+		return
+	}
+
 	selectedPlanet := lib.Planet{}
 	for _, planet := range planets {
 		if strings.ToLower(planet.Name) == strings.ToLower(optionMap["name"].StringValue()) {
@@ -76,18 +82,11 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		}
 	}
 
-	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content:    "",
-			Components: buildPlanetComponent(selectedPlanet),
-			Embeds: []*discordgo.MessageEmbed{
-				embeds.BuildPlanetEmbed(selectedPlanet),
-			},
-			AllowedMentions: nil,
-			Choices:         nil,
-			CustomID:        "",
-			Title:           "",
+	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
+		Content:    "",
+		Components: buildPlanetComponent(selectedPlanet),
+		Embeds: []*discordgo.MessageEmbed{
+			embeds.BuildPlanetEmbed(selectedPlanet),
 		},
 	})
 

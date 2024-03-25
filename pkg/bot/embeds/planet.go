@@ -47,7 +47,7 @@ func BuildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 
 	ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
 		Name:   "Under control of",
-		Value:  NameMap[planet.InitialOwner],
+		Value:  NameMap[planet.Owner],
 		Inline: true,
 	})
 
