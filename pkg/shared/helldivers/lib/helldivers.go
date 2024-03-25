@@ -13,30 +13,85 @@ type Campaign struct {
 	Count       int `json:"count"`
 }
 
+type PlanetAttack struct {
+	Source int `json:"source"`
+	Target int `json:"target"`
+}
+
+type PlanetStatus struct {
+	Index          int     `json:"index"`
+	Owner          int     `json:"owner"`
+	Health         int     `json:"health"`
+	RegenPerSecond float64 `json:"regenPerSecond"`
+	Players        int64   `json:"players"`
+}
+
+type JointOperation struct {
+	Id          int `json:"id"`
+	PlanetIndex int `json:"planetIndex"`
+	HqNodeIndex int `json:"hqNodeIndex"`
+}
+
+type PlanetEvent struct {
+	Id                int   `json:"id"`
+	PlanetIndex       int   `json:"planetIndex"`
+	EventType         int   `json:"eventType"`
+	Race              int   `json:"race"`
+	Health            int   `json:"health"`
+	MaxHealth         int   `json:"maxHealth"`
+	StartTime         int   `json:"startTime"`
+	ExpireTime        int   `json:"expireTime"`
+	CampaignId        int   `json:"campaignId"`
+	JointOperationIds []int `json:"jointOperationIds"`
+}
+
 type Status struct {
-	WarId            int     `json:"warId"`
-	Time             int     `json:"time"`
-	ImpactMultiplier float64 `json:"impactMultiplier"`
-	StoryBeatId32    int     `json:"storyBeatId32"`
-	PlanetStatus     []struct {
-		Index          int     `json:"index"`
-		Owner          int     `json:"owner"`
-		Health         int     `json:"health"`
-		RegenPerSecond float64 `json:"regenPerSecond"`
-		Players        int     `json:"players"`
-	} `json:"planetStatus"`
-	PlanetAttacks []struct {
-		Source int `json:"source"`
-		Target int `json:"target"`
-	} `json:"planetAttacks"`
-	Campaigns                   []Campaign    `json:"campaigns"`
-	CommunityTargets            []interface{} `json:"communityTargets"` // TODO Get format of inline and below
-	JointOperations             []interface{} `json:"jointOperations"`
-	PlanetEvents                []interface{} `json:"planetEvents"`
-	PlanetActiveEffects         []interface{} `json:"planetActiveEffects"`
-	ActiveElectionPolicyEffects []interface{} `json:"activeElectionPolicyEffects"`
-	GlobalEvents                []interface{} `json:"globalEvents"`
-	SuperEarthWarResults        []interface{} `json:"superEarthWarResults"`
+	WarId                       int              `json:"warId"`
+	Time                        int              `json:"time"`
+	ImpactMultiplier            float64          `json:"impactMultiplier"`
+	StoryBeatId32               int              `json:"storyBeatId32"`
+	PlanetStatus                []PlanetStatus   `json:"planetStatus"`
+	PlanetAttacks               []PlanetAttack   `json:"planetAttacks"`
+	Campaigns                   []Campaign       `json:"campaigns"`
+	JointOperations             []JointOperation `json:"jointOperations"`
+	PlanetEvents                []PlanetEvent    `json:"planetEvents"`
+	CommunityTargets            []interface{}    `json:"communityTargets"` // TODO Get format of inline and below
+	PlanetActiveEffects         []interface{}    `json:"planetActiveEffects"`
+	ActiveElectionPolicyEffects []interface{}    `json:"activeElectionPolicyEffects"`
+	GlobalEvents                []interface{}    `json:"globalEvents"`
+	SuperEarthWarResults        []interface{}    `json:"superEarthWarResults"`
+}
+
+type Position struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+}
+
+type PlanetInfo struct {
+	Index        int      `json:"index"`
+	SettingsHash int64    `json:"settingsHash"`
+	Position     Position `json:"position"`
+	Waypoints    []int    `json:"waypoints"`
+	Sector       int      `json:"sector"`
+	MaxHealth    int      `json:"maxHealth"`
+	Disabled     bool     `json:"disabled"`
+	InitialOwner int      `json:"initialOwner"`
+}
+
+type HomeWorld struct {
+	Race          int   `json:"race"`
+	PlanetIndices []int `json:"planetIndices"`
+}
+
+type WarInfo struct {
+	WarId                  int           `json:"warId"`
+	StartDate              int           `json:"startDate"`
+	EndDate                int           `json:"endDate"`
+	MinimumClientVersion   string        `json:"minimumClientVersion"`
+	PlanetInfos            []PlanetInfo  `json:"planetInfos"`
+	HomeWorlds             []HomeWorld   `json:"homeWorlds"`
+	CapitalInfos           []interface{} `json:"capitalInfos"`
+	PlanetPermanentEffects []interface{} `json:"planetPermanentEffects"`
 }
 
 type NewsMessage struct {
@@ -68,6 +123,10 @@ type Assignment struct {
 		} `json:"reward"`
 		Flags int `json:"flags"`
 	} `json:"setting"`
+}
+
+type TimeSinceStart struct {
+	SecondsSinceStart int `json:"secondsSinceStart"`
 }
 
 func (c *Client) GetHelldiversNewsFeed(warId string, timestamp int) ([]NewsMessage, error) {
@@ -124,4 +183,26 @@ func (c *Client) GetHelldiversStatus(warId string) (Status, error) {
 	var status Status
 	err = json.Unmarshal(resp.bodyRead, &status)
 	return status, err
+}
+
+func (c *Client) GetHelldiversWarInfo(warId string) (WarInfo, error) {
+	resp, err := c.Request("GET", fmt.Sprintf(HelldiversWarInfoRoute, warId), nil)
+	if err != nil {
+		return WarInfo{}, err
+	}
+
+	var warInfo WarInfo
+	err = json.Unmarshal(resp.bodyRead, &warInfo)
+	return warInfo, err
+}
+
+func (c *Client) GetHelldiversTimeSinceStart(warId string) (TimeSinceStart, error) {
+	resp, err := c.Request("GET", fmt.Sprintf(HelldiversWarTimeSinceStartRoute, warId), nil)
+	if err != nil {
+		return TimeSinceStart{}, err
+	}
+
+	var timeSinceStart TimeSinceStart
+	err = json.Unmarshal(resp.bodyRead, &timeSinceStart)
+	return timeSinceStart, err
 }

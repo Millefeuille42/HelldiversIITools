@@ -5,6 +5,21 @@ import (
 	"encoding/json"
 )
 
+func GetPlanetNames() ([]lib.PlanetName, error) {
+	data, err := Client.Get(Context, "planet_names").Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	var planetNames []lib.PlanetName
+	err = json.Unmarshal(data, &planetNames)
+	if err != nil {
+		return nil, err
+	}
+
+	return planetNames, nil
+}
+
 func GetNewsMessage() (lib.NewsMessage, error) {
 	data, err := Client.Get(Context, "news_message").Bytes()
 	if err != nil {
@@ -33,36 +48,6 @@ func GetLatestNewsMessage() (lib.NewsMessage, error) {
 	}
 
 	return message, nil
-}
-
-func GetDiveHarderPlanets() (lib.DiveHarderPlanetsResponse, error) {
-	data, err := Client.Get(Context, "diveharder_planets").Bytes()
-	if err != nil {
-		return lib.DiveHarderPlanetsResponse{}, err
-	}
-
-	var planets lib.DiveHarderPlanetsResponse
-	err = json.Unmarshal(data, &planets)
-	if err != nil {
-		return lib.DiveHarderPlanetsResponse{}, err
-	}
-
-	return planets, nil
-}
-
-func GetDiveHarderPlanetsActive() (lib.DiveHarderPlanetsActiveResponse, error) {
-	data, err := Client.Get(Context, "diveharder_planets_active").Bytes()
-	if err != nil {
-		return lib.DiveHarderPlanetsActiveResponse{}, err
-	}
-
-	var planets lib.DiveHarderPlanetsActiveResponse
-	err = json.Unmarshal(data, &planets)
-	if err != nil {
-		return lib.DiveHarderPlanetsActiveResponse{}, err
-	}
-
-	return planets, nil
 }
 
 func GetPlanetsStats() ([]lib.PlanetStats, error) {
@@ -123,4 +108,19 @@ func GetStatus() (lib.Status, error) {
 	}
 
 	return status, nil
+}
+
+func GetWarInfo() (lib.WarInfo, error) {
+	data, err := Client.Get(Context, "war_info").Bytes()
+	if err != nil {
+		return lib.WarInfo{}, err
+	}
+
+	var warInfo lib.WarInfo
+	err = json.Unmarshal(data, &warInfo)
+	if err != nil {
+		return lib.WarInfo{}, err
+	}
+
+	return warInfo, nil
 }

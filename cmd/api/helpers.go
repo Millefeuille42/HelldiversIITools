@@ -1,131 +1,11 @@
 package main
 
 import (
-	"Helldivers2Tools/pkg/api/redisCache"
-	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"errors"
 )
 
 const warId = "801"
-
-func getLastMessage() (lib.NewsMessage, error) {
-	message, err := redisCache.GetLatestNewsMessage()
-	if err != nil {
-		message, err = helldivers.HDClient.GetHelldiversLatestNewsFeed(warId)
-		if err != nil {
-			return lib.NewsMessage{}, err
-		}
-		err = redisCache.SetLatestNewsMessage(message)
-		if err != nil {
-			return lib.NewsMessage{}, err
-		}
-		err = redisCache.SetNewsMessage(message)
-	}
-	return message, err
-}
-
-func getDiveHarderPlanets() (lib.DiveHarderPlanetsResponse, error) {
-	planets, err := redisCache.GetDiveHarderPlanets()
-	if err != nil {
-		planets, err = helldivers.DiveHarderClient.GetDiveHarderPlanets()
-		if err != nil {
-			return lib.DiveHarderPlanetsResponse{}, err
-		}
-		err = redisCache.SetDiveHarderPlanets(planets)
-	}
-	return planets, err
-}
-
-func getDiveHarderPlanetsActive() (lib.DiveHarderPlanetsActiveResponse, error) {
-	planets, err := redisCache.GetDiveHarderPlanetsActive()
-	if err != nil {
-		planets, err = helldivers.DiveHarderClient.GetDiveHarderPlanetsActive()
-		if err != nil {
-			return lib.DiveHarderPlanetsActiveResponse{}, err
-		}
-		err = redisCache.SetDiveHarderPlanetsActive(planets)
-	}
-	return planets, err
-}
-
-func getDiveHarderPlanetStats() ([]lib.PlanetStats, error) {
-	planetStats, err := redisCache.GetPlanetsStats()
-	if err != nil {
-		err = nil
-		stats, err := helldivers.DiveHarderClient.GetDiveHarderStats()
-		if err != nil {
-			return nil, err
-		}
-		planetStats = stats.PlanetsStats
-		err = redisCache.SetPlanetsStats(planetStats)
-		if err != nil {
-			return planetStats, err
-		}
-		err = redisCache.SetGalaxyStats(stats.GalaxyStats)
-	}
-	return planetStats, err
-}
-
-func getDiveHarderGalaxyStats() (lib.GalaxyStats, error) {
-	galaxyStats, err := redisCache.GetGalaxyStats()
-	if err != nil {
-		err = nil
-		stats, err := helldivers.DiveHarderClient.GetDiveHarderStats()
-		if err != nil {
-			return lib.GalaxyStats{}, err
-		}
-		galaxyStats = stats.GalaxyStats
-		err = redisCache.SetGalaxyStats(galaxyStats)
-		if err != nil {
-			return galaxyStats, err
-		}
-		err = redisCache.SetPlanetsStats(stats.PlanetsStats)
-	}
-	return galaxyStats, err
-}
-
-func getAssignment() (lib.Assignment, error) {
-	assignment, err := redisCache.GetAssignment()
-	if err != nil {
-		assignment, err = helldivers.HDClient.GetHelldiversAssignment(warId)
-		if err != nil {
-			return lib.Assignment{}, err
-		}
-		err = redisCache.SetAssignment(assignment)
-	}
-	return assignment, err
-}
-
-func getStatus() (lib.Status, error) {
-	status, err := redisCache.GetStatus()
-	if err != nil {
-		status, err = helldivers.HDClient.GetHelldiversStatus(warId)
-		if err != nil {
-			return lib.Status{}, err
-		}
-		err = redisCache.SetStatus(status)
-	}
-	return status, err
-}
-
-func searchInDiveHarderPlanets(planets lib.DiveHarderPlanetsResponse, id int) (lib.DiveHarderPlanet, error) {
-	for i := range planets.Planets {
-		if planets.Planets[i].PlanetIndex == id {
-			return planets.Planets[i], nil
-		}
-	}
-	return lib.DiveHarderPlanet{}, errors.New("not found")
-}
-
-func searchInDiveHarderPlanetActive(planets lib.DiveHarderPlanetsActiveResponse, id int) (lib.DiveHarderPlanetsActive, error) {
-	for i := range planets.Planets {
-		if planets.Planets[i].PlanetIndex == id {
-			return planets.Planets[i], nil
-		}
-	}
-	return lib.DiveHarderPlanetsActive{}, errors.New("not found")
-}
 
 func searchInDiveHarderPlanetStats(planets []lib.PlanetStats, id int) (lib.PlanetStats, error) {
 	for i := range planets {
@@ -136,53 +16,126 @@ func searchInDiveHarderPlanetStats(planets []lib.PlanetStats, id int) (lib.Plane
 	return lib.PlanetStats{}, errors.New("not found")
 }
 
+func searchInPlanetInfo(planets []lib.PlanetInfo, id int) (lib.PlanetInfo, error) {
+	for i := range planets {
+		if planets[i].Index == id {
+			return planets[i], nil
+		}
+	}
+	return lib.PlanetInfo{}, errors.New("not found")
+}
+
+func searchInPlanetNames(planets []lib.PlanetName, id int) (lib.PlanetName, error) {
+	for i := range planets {
+		if planets[i].Index == id {
+			return planets[i], nil
+		}
+	}
+	return lib.PlanetName{}, errors.New("not found")
+}
+
+func searchInPlanetStatus(planets []lib.PlanetStatus, id int) (lib.PlanetStatus, error) {
+	for i := range planets {
+		if planets[i].Index == id {
+			return planets[i], nil
+		}
+	}
+	return lib.PlanetStatus{}, errors.New("not found")
+}
+
+func searchHomeWorlds(homeWorlds []lib.HomeWorld, planetId int) []lib.HomeWorld {
+	if homeWorlds == nil {
+		return nil
+	}
+	var planetHomeWorlds []lib.HomeWorld
+	for i := range homeWorlds {
+		for i2 := range homeWorlds[i].PlanetIndices {
+			if homeWorlds[i].PlanetIndices[i2] == planetId {
+				planetHomeWorlds = append(planetHomeWorlds, homeWorlds[i])
+				break
+			}
+		}
+	}
+	return planetHomeWorlds
+}
+
+func searchPlanetEvents(planets []lib.PlanetEvent, planetId int) []lib.PlanetEvent {
+	if planets == nil {
+		return nil
+	}
+	var events []lib.PlanetEvent
+	for i := range planets {
+		if planets[i].PlanetIndex == planetId {
+			events = append(events, planets[i])
+		}
+	}
+	return events
+}
+
+func searchPlanetAttacks(planets []lib.PlanetAttack, planetId int) []lib.PlanetAttack {
+	if planets == nil {
+		return nil
+	}
+	var attacks []lib.PlanetAttack
+	for i := range planets {
+		if planets[i].Source == planetId || planets[i].Target == planetId {
+			attacks = append(attacks, planets[i])
+		}
+	}
+	return attacks
+}
+
+func searchJointOperations(operations []lib.JointOperation, planetId int) []lib.JointOperation {
+	if operations == nil {
+		return nil
+	}
+	var planetOperations []lib.JointOperation
+	for i := range operations {
+		if operations[i].PlanetIndex == planetId {
+			planetOperations = append(planetOperations, operations[i])
+		}
+	}
+	return planetOperations
+}
+
+func searchCampaigns(campaigns []lib.Campaign, planetId int) []lib.Campaign {
+	var planetCampaigns []lib.Campaign
+	for i := range campaigns {
+		if campaigns[i].PlanetIndex == planetId {
+			planetCampaigns = append(planetCampaigns, campaigns[i])
+		}
+	}
+	return planetCampaigns
+}
+
 func constructPlanet(planetId int) (lib.Planet, error) {
-	dhPlanets, err := getDiveHarderPlanets()
-	if err != nil {
-		return lib.Planet{}, err
-	}
-	dhPlanetsActive, err := getDiveHarderPlanetsActive()
-	if err != nil {
-		return lib.Planet{}, err
-	}
 	dhPlanetsStats, err := getDiveHarderPlanetStats()
 	if err != nil {
 		return lib.Planet{}, err
 	}
 
+	warInfo, err := getWarInfo()
+	if err != nil {
+		return lib.Planet{}, err
+	}
+
+	status, err := getStatus()
+	if err != nil {
+		return lib.Planet{}, err
+	}
+
+	planetNames, err := getPlanetNames()
+	if err != nil {
+		return lib.Planet{}, err
+	}
+
 	planet := lib.Planet{}
-
-	if dhPlanet, err := searchInDiveHarderPlanets(dhPlanets, planetId); err == nil {
-		planet.PlanetIndex = dhPlanet.PlanetIndex
-		planet.PlanetName = dhPlanet.PlanetName
-		planet.InitialOwner = dhPlanet.InitialOwner
-		planet.CurrentOwner = dhPlanet.CurrentOwner
-		planet.PosX = dhPlanet.PosX
-		planet.PosY = dhPlanet.PosY
-		planet.WaypointIndices = dhPlanet.WaypointIndices
-		planet.WaypointNames = dhPlanet.WaypointNames
-		planet.Health = dhPlanet.Health
-		planet.MaxHealth = dhPlanet.MaxHealth
-		planet.Players = dhPlanet.Players
-		planet.RegenPerSecond = dhPlanet.RegenPerSecond
-	}
-
-	if dhPlanetActive, err := searchInDiveHarderPlanetActive(dhPlanetsActive, planetId); err == nil {
-		planet.PlanetIndex = dhPlanetActive.PlanetIndex
-		planet.PlanetName = dhPlanetActive.PlanetName
-		planet.Health = dhPlanetActive.Health
-		planet.MaxHealth = dhPlanetActive.MaxHealth
-		planet.LibPercent = dhPlanetActive.LibPercent
-		planet.Players = dhPlanetActive.Players
-		planet.HoursComplete = dhPlanetActive.HoursComplete
-	}
-
 	if dhPlanetStats, err := searchInDiveHarderPlanetStats(dhPlanetsStats, planetId); err == nil {
-		planet.PlanetIndex = dhPlanetStats.PlanetIndex
+		planet.Index = dhPlanetStats.PlanetIndex
 		planet.MissionsWon = dhPlanetStats.MissionsWon
 		planet.MissionsLost = dhPlanetStats.MissionsLost
 		planet.MissionTime = dhPlanetStats.MissionTime
-		planet.BugKills = dhPlanetStats.BugKills
+		planet.TerminidKills = dhPlanetStats.BugKills
 		planet.AutomatonKills = dhPlanetStats.AutomatonKills
 		planet.IlluminateKills = dhPlanetStats.IlluminateKills
 		planet.BulletsFired = dhPlanetStats.BulletsFired
@@ -194,6 +147,38 @@ func constructPlanet(planetId int) (lib.Planet, error) {
 		planet.MissionSuccessRate = dhPlanetStats.MissionSuccessRate
 		planet.Accuracy = dhPlanetStats.Accuracy
 	}
+
+	if planetName, err := searchInPlanetNames(planetNames, planetId); err == nil {
+		planet.Name = planetName.Name
+	}
+
+	if planetInfo, err := searchInPlanetInfo(warInfo.PlanetInfos, planetId); err == nil {
+		planet.Index = planetInfo.Index
+		planet.Position = planetInfo.Position
+		planet.Waypoints = planetInfo.Waypoints
+		planet.Sector = planetInfo.Sector
+		planet.MaxHealth = planetInfo.MaxHealth
+		planet.Disabled = planetInfo.Disabled
+		planet.InitialOwner = lib.Faction(planetInfo.InitialOwner)
+	}
+
+	if planetStatus, err := searchInPlanetStatus(status.PlanetStatus, planetId); err == nil {
+		planet.Index = planetStatus.Index
+		planet.Owner = lib.Faction(planetStatus.Owner)
+		planet.Health = planetStatus.Health
+		planet.RegenPerSecond = planetStatus.RegenPerSecond
+		planet.Players = planetStatus.Players
+	}
+
+	if planet.MaxHealth != 0 && planet.Health != 0 {
+		planet.LiberationPercent = 100.0 - (100.0 / float64(planet.MaxHealth*planet.Health))
+	}
+
+	planet.Attacks = searchPlanetAttacks(status.PlanetAttacks, planetId)
+	planet.Events = searchPlanetEvents(status.PlanetEvents, planetId)
+	planet.JointOperations = searchJointOperations(status.JointOperations, planetId)
+	planet.Campaigns = searchCampaigns(status.Campaigns, planetId)
+	planet.HomeWorlds = searchHomeWorlds(warInfo.HomeWorlds, planetId)
 
 	return planet, nil
 }
@@ -211,8 +196,8 @@ func constructTasks(assignment lib.Assignment) ([]lib.Task, error) {
 				if err != nil {
 					return nil, err
 				}
-				task.Target.Name = planet.PlanetName
-				task.Target.Index = planet.PlanetIndex
+				task.Target.Index = planet.Index
+				task.Target.Name = planet.Name
 			}
 		}
 		tasks = append(tasks, task)

@@ -52,21 +52,12 @@ func orderHandler(c fiber.Ctx) error {
 
 // planetsNameHandler: returns: lib.PlanetName
 func planetsNameHandler(c fiber.Ctx) error {
-	planets, err := getDiveHarderPlanets()
+	planetNames, err := getPlanetNames()
 	if err != nil {
 		log.Println(err)
 		return fiber.ErrInternalServerError
 	}
-
-	var planetsName []lib.PlanetName
-	for _, planet := range planets.Planets {
-		planetsName = append(planetsName, lib.PlanetName{
-			Index: planet.PlanetIndex,
-			Name:  planet.PlanetName,
-		})
-	}
-
-	return c.JSON(planetsName)
+	return c.JSON(planetNames)
 }
 
 // planetHandler: returns: lib.Planet
@@ -101,4 +92,70 @@ func campaignsHandler(c fiber.Ctx) error {
 	}
 
 	return c.JSON(status.Campaigns)
+}
+
+// planetEventsHandler: returns: []lib.PlanetEvent
+func planetEventsHandler(c fiber.Ctx) error {
+	status, err := getStatus()
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(status.PlanetEvents)
+}
+
+// planetStatusHandler: returns: []lib.PlanetStatus
+func planetStatusHandler(c fiber.Ctx) error {
+	status, err := getStatus()
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(status.PlanetStatus)
+}
+
+// planetAttacksHandler: returns: []lib.PlanetAttack
+func planetAttacksHandler(c fiber.Ctx) error {
+	status, err := getStatus()
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(status.PlanetAttacks)
+}
+
+// jointOperationsHandler: returns: []lib.JointOperation
+func jointOperationsHandler(c fiber.Ctx) error {
+	status, err := getStatus()
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(status.JointOperations)
+}
+
+// planetInfosHandler: returns: []lib.PlanetInfo
+func planetInfosHandler(c fiber.Ctx) error {
+	warInfo, err := getWarInfo()
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(warInfo.PlanetInfos)
+}
+
+// homeWorldsHandler: returns: []lib.HomeWorld
+func homeWorldsHandler(c fiber.Ctx) error {
+	warInfo, err := getWarInfo()
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(warInfo.HomeWorlds)
 }

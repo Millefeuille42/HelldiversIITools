@@ -64,14 +64,20 @@ func main() {
 
 	app.Use(compress.New())
 	apiGroup := app.Group("/api")
-	apiGroup.Get("/feed", feedHandler)
-	apiGroup.Get("/order", orderHandler)
-	apiGroup.Get("/galaxy", galaxyStatsHandler)
-	apiGroup.Get("/campaigns", campaignsHandler)
+	apiGroup.Get(lib.GoDiversFeedRoute, feedHandler)
+	apiGroup.Get(lib.GoDiversOrderRoute, orderHandler)
+	apiGroup.Get(lib.GoDiversGalaxyStatsRoute, galaxyStatsHandler)
+	apiGroup.Get(lib.GoDiversCampaignsRoute, campaignsHandler)
+	apiGroup.Get(lib.GoDiversHomeWorldsRoute, homeWorldsHandler)
+	apiGroup.Get(lib.GoDiversJointOperationsRoute, jointOperationsHandler)
 
 	planetsGroup := apiGroup.Group("/planets")
-	planetsGroup.Get("/", planetsNameHandler)
-	planetsGroup.Get("/:planet_id", planetHandler)
+	planetsGroup.Get("/names", planetsNameHandler)
+	planetsGroup.Get("/infos", planetInfosHandler)
+	planetsGroup.Get("/status", planetStatusHandler)
+	planetsGroup.Get("/attacks", planetAttacksHandler)
+	planetsGroup.Get("/events", planetEventsHandler)
+	planetsGroup.Get("/planet/:planet_id", planetHandler)
 
 	go startServer(app, os.Getenv("HDII__API__BIND_ADDRESS"))
 

@@ -7,65 +7,79 @@ import (
 	"time"
 )
 
+type Faction int
+type RewardType int
+type TaskType int
+type TaskValueType int
+type EventType int
+type CampaignType int
+
+const (
+	Humans     Faction = 1
+	Terminids  Faction = 2
+	Automatons Faction = 3
+	Illuminate Faction = 4
+
+	MedalRewardType RewardType = 1
+
+	LiberateTaskType TaskType = 11
+	ControlTaskType  TaskType = 13
+
+	PlanetTaskValueType TaskValueType = 12
+
+	DefenseEventType EventType = 1
+
+	MajorOrderCampaignType CampaignType = 2
+)
+
 type Planet struct {
-	PlanetIndex        int     `json:"planetIndex"`
-	PlanetName         string  `json:"planetName"`
-	InitialOwner       string  `json:"initialOwner"`
-	CurrentOwner       string  `json:"currentOwner"`
-	PosX               float64 `json:"posX"`
-	PosY               float64 `json:"posY"`
-	WaypointIndices    string  `json:"waypointIndices"`
-	WaypointNames      string  `json:"waypointNames"`
-	Health             int     `json:"health"`
-	MaxHealth          int     `json:"maxHealth"`
-	Players            int64   `json:"players"`
-	RegenPerSecond     float64 `json:"regenPerSecond"`
-	MissionsWon        int64   `json:"missionsWon"`
-	MissionsLost       int64   `json:"missionsLost"`
-	MissionTime        int64   `json:"missionTime"`
-	BugKills           int64   `json:"bugKills"`
-	AutomatonKills     int64   `json:"automatonKills"`
-	IlluminateKills    int64   `json:"illuminateKills"`
-	BulletsFired       int64   `json:"bulletsFired"`
-	BulletsHit         int64   `json:"bulletsHit"`
-	TimePlayed         int64   `json:"timePlayed"`
-	Deaths             int64   `json:"deaths"`
-	Revives            int64   `json:"revives"`
-	Friendlies         int64   `json:"friendlies"`
-	MissionSuccessRate int     `json:"missionSuccessRate"`
-	Accuracy           int     `json:"accurracy"`
-	LibPercent         float64 `json:"libPercent"`
-	HoursComplete      float64 `json:"hoursComplete"`
+	Index     int      `json:"index"`
+	Name      string   `json:"name"`
+	Position  Position `json:"position"`
+	Waypoints []int    `json:"waypoints"`
+	Sector    int      `json:"sector"`
+	Disabled  bool     `json:"disabled"`
+
+	MaxHealth         int     `json:"max_health"`
+	Health            int     `json:"health"`
+	RegenPerSecond    float64 `json:"regen_per_second"`
+	LiberationPercent float64 `json:"liberation_percent"`
+
+	Owner        int `json:"owner"`
+	InitialOwner int `json:"initial_owner"`
+
+	Players            int64 `json:"players"`
+	MissionsWon        int64 `json:"missions_won"`
+	MissionsLost       int64 `json:"missions_lost"`
+	MissionTime        int64 `json:"mission_time"`
+	TerminidKills      int64 `json:"terminid_kills"`
+	AutomatonKills     int64 `json:"automaton_kills"`
+	IlluminateKills    int64 `json:"illuminate_kills"`
+	BulletsFired       int64 `json:"bullets_fired"`
+	BulletsHit         int64 `json:"bullets_hit"`
+	TimePlayed         int64 `json:"time_played"`
+	Deaths             int64 `json:"deaths"`
+	Revives            int64 `json:"revives"`
+	Friendlies         int64 `json:"friendlies"`
+	MissionSuccessRate int   `json:"mission_success_rate"`
+	Accuracy           int   `json:"accuracy"`
+
+	Attacks         []PlanetAttack   `json:"attacks"`
+	Events          []PlanetEvent    `json:"events"`
+	JointOperations []JointOperation `json:"joint_operations"`
+	HomeWorlds      []HomeWorld      `json:"home_worlds"`
+	Campaigns       []Campaign       `json:"campaigns"`
 }
 
 type PlanetName struct {
-	Index int    `json:"planetIndex"`
-	Name  string `json:"planetName"`
+	Index int    `json:"planet_index"`
+	Name  string `json:"planet_name"`
 }
-
-type RewardType int
-
-const (
-	MedalRewardType RewardType = 1
-)
 
 type Reward struct {
 	Type   RewardType `json:"type"`
 	Amount int        `json:"amount"`
 }
-
-type TaskType int
-
-const (
-	LiberateTaskType TaskType = 11
-	ControlTaskType  TaskType = 13
-)
-
-type TaskValueType int
-
-const (
-	PlanetTaskValueType TaskValueType = 12
-)
 
 type Task struct {
 	Type     TaskType   `json:"type"`
@@ -125,6 +139,50 @@ func (c *Client) GetPlanetsName() ([]PlanetName, error) {
 	var planetName []PlanetName
 	err = json.Unmarshal(resp.bodyRead, &planetName)
 	return planetName, err
+}
+
+func (c *Client) GetPlanetsInfo() ([]PlanetInfo, error) {
+	resp, err := c.Request("GET", GoDiversPlanetInfosRoute, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var planetInfo []PlanetInfo
+	err = json.Unmarshal(resp.bodyRead, &planetInfo)
+	return planetInfo, err
+}
+
+func (c *Client) GetPlanetsStatus() ([]PlanetStatus, error) {
+	resp, err := c.Request("GET", GoDiversPlanetStatusRoute, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var planetStatus []PlanetStatus
+	err = json.Unmarshal(resp.bodyRead, &planetStatus)
+	return planetStatus, err
+}
+
+func (c *Client) GetPlanetsAttack() ([]PlanetAttack, error) {
+	resp, err := c.Request("GET", GoDiversPlanetAttacksRoute, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var planetAttack []PlanetAttack
+	err = json.Unmarshal(resp.bodyRead, &planetAttack)
+	return planetAttack, err
+}
+
+func (c *Client) GetPlanetsEvent() ([]PlanetEvent, error) {
+	resp, err := c.Request("GET", GoDiversPlanetEventsRoute, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var planetEvent []PlanetEvent
+	err = json.Unmarshal(resp.bodyRead, &planetEvent)
+	return planetEvent, err
 }
 
 func (c *Client) GetPlanet(planetId int) (Planet, error) {
