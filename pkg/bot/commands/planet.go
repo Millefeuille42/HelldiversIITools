@@ -23,7 +23,7 @@ func buildPlanetsChoices(planets []lib.PlanetName) []*discordgo.ApplicationComma
 	return choices
 }
 
-func buildPlanetComponent(planet lib.Planet, names []lib.PlanetName) []discordgo.MessageComponent {
+func buildPlanetComponent(planet lib.Planet) []discordgo.MessageComponent {
 	if planet.Waypoints == nil || len(planet.Waypoints) <= 0 {
 		return nil
 	}
@@ -31,20 +31,14 @@ func buildPlanetComponent(planet lib.Planet, names []lib.PlanetName) []discordgo
 	var buttons []discordgo.MessageComponent
 
 	for _, waypoint := range planet.Waypoints {
-		waypointName := ""
-		for _, name := range names {
-			if name.Index == waypoint {
-				waypointName = name.Name
-			}
-		}
 		buttons = append(buttons, discordgo.Button{
-			Label:    waypointName,
+			Label:    waypoint.Name,
 			Style:    0,
 			Disabled: false,
 			Emoji: discordgo.ComponentEmoji{
 				Name: "🌎",
 			},
-			CustomID: fmt.Sprintf("planet_button-%d", waypoint),
+			CustomID: fmt.Sprintf("planet_button-%d", waypoint.Index),
 		})
 	}
 
@@ -86,9 +80,9 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content:    "",
-			Components: buildPlanetComponent(selectedPlanet, planets),
+			Components: buildPlanetComponent(selectedPlanet),
 			Embeds: []*discordgo.MessageEmbed{
-				embeds.BuildPlanetEmbed(selectedPlanet, planets),
+				embeds.BuildPlanetEmbed(selectedPlanet),
 			},
 			AllowedMentions: nil,
 			Choices:         nil,
@@ -116,16 +110,10 @@ func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate
 		return
 	}
 
-	planets, err := helldivers.GoDiversClient.GetPlanetsName()
-	if err != nil {
-		interactionSendFollowupError(s, i, "Error fetching planets", discordgo.MessageFlagsEphemeral)
-		return
-	}
-
 	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
-		Components: buildPlanetComponent(planet, planets),
+		Components: buildPlanetComponent(planet),
 		Embeds: []*discordgo.MessageEmbed{
-			embeds.BuildPlanetEmbed(planet, planets),
+			embeds.BuildPlanetEmbed(planet),
 		},
 	})
 

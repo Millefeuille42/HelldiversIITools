@@ -26,7 +26,7 @@ var ImageMap = map[lib.Faction]string{
 	lib.Humans:     "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040867881156618.png",
 }
 
-func BuildPlanetEmbed(planet lib.Planet, names []lib.PlanetName) *discordgo.MessageEmbed {
+func BuildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 	ret := &discordgo.MessageEmbed{
 		Type:  "rich",
 		Color: ColorMap[planet.Owner],
@@ -78,11 +78,7 @@ func BuildPlanetEmbed(planet lib.Planet, names []lib.PlanetName) *discordgo.Mess
 	if planet.Waypoints != nil && len(planet.Waypoints) > 0 {
 		var waypointNames []string
 		for _, waypoint := range planet.Waypoints {
-			for _, name := range names {
-				if name.Index == waypoint {
-					waypointNames = append(waypointNames, name.Name)
-				}
-			}
+			waypointNames = append(waypointNames, waypoint.Name)
 		}
 		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
 			Name:   "Related planets",

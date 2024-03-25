@@ -4,7 +4,6 @@ import (
 	"Helldivers2Tools/pkg/bot/embeds"
 	"Helldivers2Tools/pkg/bot/globals"
 	"Helldivers2Tools/pkg/bot/models"
-	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"Helldivers2Tools/pkg/shared/redisEvent"
 	"encoding/json"
@@ -78,12 +77,8 @@ func handlePlanetLiberated(event []byte) error {
 	if err != nil {
 		return errors.New("invalid data type")
 	}
-	planetNames, err := helldivers.GoDiversClient.GetPlanetsName()
-	if err != nil {
-		return err
-	}
 
-	embed := embeds.BuildPlanetEmbed(planet, planetNames)
+	embed := embeds.BuildPlanetEmbed(planet)
 	embed.Title = fmt.Sprintf("✅ %s liberated", embed.Title)
 	return streamEmbed(embed)
 }
@@ -95,12 +90,7 @@ func handlePlanetLost(event []byte) error {
 		return errors.New("invalid data type")
 	}
 
-	planetNames, err := helldivers.GoDiversClient.GetPlanetsName()
-	if err != nil {
-		return err
-	}
-
-	embed := embeds.BuildPlanetEmbed(planet, planetNames)
+	embed := embeds.BuildPlanetEmbed(planet)
 	embed.Title = fmt.Sprintf("❌ %s lost to the %s", embed.Title, embeds.NameMap[planet.Owner])
 	return streamEmbed(embed)
 }

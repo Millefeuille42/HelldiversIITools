@@ -33,12 +33,12 @@ const (
 )
 
 type Planet struct {
-	Index     int      `json:"index"`
-	Name      string   `json:"name"`
-	Position  Position `json:"position"`
-	Waypoints []int    `json:"waypoints"`
-	Sector    int      `json:"sector"`
-	Disabled  bool     `json:"disabled"`
+	Index     int          `json:"index"`
+	Name      string       `json:"name"`
+	Position  Position     `json:"position"`
+	Waypoints []PlanetName `json:"waypoints"`
+	Sector    int          `json:"sector"`
+	Disabled  bool         `json:"disabled"`
 
 	MaxHealth         int     `json:"max_health"`
 	Health            int     `json:"health"`

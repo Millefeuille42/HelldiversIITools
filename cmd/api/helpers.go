@@ -155,7 +155,13 @@ func constructPlanet(planetId int) (lib.Planet, error) {
 	if planetInfo, err := searchInPlanetInfo(warInfo.PlanetInfos, planetId); err == nil {
 		planet.Index = planetInfo.Index
 		planet.Position = planetInfo.Position
-		planet.Waypoints = planetInfo.Waypoints
+		for _, waypointId := range planetInfo.Waypoints {
+			planetName, err := searchInPlanetNames(planetNames, waypointId)
+			if err != nil {
+				continue
+			}
+			planet.Waypoints = append(planet.Waypoints, planetName)
+		}
 		planet.Sector = planetInfo.Sector
 		planet.MaxHealth = planetInfo.MaxHealth
 		planet.Disabled = planetInfo.Disabled
