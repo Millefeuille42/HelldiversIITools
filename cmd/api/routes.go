@@ -1,7 +1,6 @@
 package main
 
 import (
-	"Helldivers2Tools/pkg/api/redisCache"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"Helldivers2Tools/pkg/shared/utils"
 	"github.com/gofiber/fiber/v3"
@@ -11,16 +10,13 @@ import (
 
 // feedHandler: returns: lib.NewsMessage
 func feedHandler(c fiber.Ctx) error {
-	feed, err := redisCache.GetNewsMessage()
+	message, err := getLastMessage()
 	if err != nil {
-		feed, err = getLastMessage()
-		if err != nil {
-			log.Println(err)
-			return fiber.ErrInternalServerError
-		}
+		log.Println(err)
+		return fiber.ErrInternalServerError
 	}
 
-	return c.JSON(feed)
+	return c.JSON(message)
 }
 
 // orderHandler: returns: lib.MajorOrder

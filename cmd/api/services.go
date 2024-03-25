@@ -5,6 +5,7 @@ import (
 	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"encoding/json"
+	"errors"
 	"os"
 )
 
@@ -25,11 +26,29 @@ func getPlanetNames() ([]lib.PlanetName, error) {
 }
 
 func getLastMessage() (lib.NewsMessage, error) {
-	message, err := redisCache.GetLatestNewsMessage()
+	message, err := redisCache.GetNewsMessage()
 	if err != nil {
-		message, err = helldivers.HDClient.GetHelldiversLatestNewsFeed(warId)
+		var latest lib.NewsMessage
+		latest, err = redisCache.GetLatestNewsMessage()
 		if err != nil {
-			return lib.NewsMessage{}, err
+			message, err = helldivers.HDClient.GetHelldiversLatestNewsFeed(warId)
+			if err != nil {
+				return lib.NewsMessage{}, err
+			}
+		} else {
+			var feed []lib.NewsMessage
+			feed, err = helldivers.HDClient.GetHelldiversNewsFeed(warId, latest.Published)
+			if err != nil {
+				message, err = helldivers.HDClient.GetHelldiversLatestNewsFeed(warId)
+				if err != nil {
+					return lib.NewsMessage{}, err
+				}
+			} else {
+				if feed == nil || len(feed) <= 0 {
+					return lib.NewsMessage{}, errors.New("no message")
+				}
+				message = feed[len(feed)-1]
+			}
 		}
 		err = redisCache.SetLatestNewsMessage(message)
 		if err != nil {

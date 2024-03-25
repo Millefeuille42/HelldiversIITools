@@ -11,7 +11,6 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/healthcheck"
 	"github.com/gofiber/fiber/v3/middleware/helmet"
 	"github.com/gofiber/fiber/v3/middleware/logger"
-	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/redis/go-redis/v9"
 	"log"
 	"os"
@@ -57,7 +56,6 @@ func main() {
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})
-	app.Use(recover.New())
 	app.Use(logger.New())
 	app.Use(helmet.New())
 	app.Get("/health", healthcheck.NewHealthChecker())
