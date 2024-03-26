@@ -1,6 +1,6 @@
 module Helldivers2Tools
 
-go 1.20
+go 1.19
 
 require (
 	github.com/InfluxCommunity/influxdb3-go v0.6.0
@@ -11,6 +11,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/redis/go-redis/v9 v9.5.1
+	golang.org/x/text v0.14.0
 )
 
 require (
@@ -39,7 +40,6 @@ require (
 	golang.org/x/mod v0.13.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240123012728-ef4313101c80 // indirect
