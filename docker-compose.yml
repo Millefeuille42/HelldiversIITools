@@ -8,7 +8,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile_api
+      target: api
     image: hdii_tools__api
     restart: always
     depends_on:
@@ -25,7 +25,7 @@ services:
   bot:
     build:
       context: .
-      dockerfile: Dockerfile_bot
+      target: bot
     image: hdii_tools__bot
     restart: always
     depends_on:
@@ -43,7 +43,7 @@ services:
   updater:
     build:
       context: .
-      dockerfile: Dockerfile_updater
+      target: updater
     image: hdii_tools__updater
     restart: always
     depends_on:
