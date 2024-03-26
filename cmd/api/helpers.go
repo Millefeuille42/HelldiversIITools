@@ -3,6 +3,7 @@ package main
 import (
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"errors"
+	"log"
 )
 
 const warId = "801"
@@ -111,7 +112,7 @@ func searchCampaigns(campaigns []lib.Campaign, planetId int) []lib.Campaign {
 func constructPlanet(planetId int) (lib.Planet, error) {
 	dhPlanetsStats, err := getDiveHarderPlanetStats()
 	if err != nil {
-		return lib.Planet{}, err
+		log.Println(err)
 	}
 
 	warInfo, err := getWarInfo()
@@ -130,23 +131,6 @@ func constructPlanet(planetId int) (lib.Planet, error) {
 	}
 
 	planet := lib.Planet{}
-	if dhPlanetStats, err := searchInDiveHarderPlanetStats(dhPlanetsStats, planetId); err == nil {
-		planet.Index = dhPlanetStats.PlanetIndex
-		planet.MissionsWon = dhPlanetStats.MissionsWon
-		planet.MissionsLost = dhPlanetStats.MissionsLost
-		planet.MissionTime = dhPlanetStats.MissionTime
-		planet.TerminidKills = dhPlanetStats.BugKills
-		planet.AutomatonKills = dhPlanetStats.AutomatonKills
-		planet.IlluminateKills = dhPlanetStats.IlluminateKills
-		planet.BulletsFired = dhPlanetStats.BulletsFired
-		planet.BulletsHit = dhPlanetStats.BulletsHit
-		planet.TimePlayed = dhPlanetStats.TimePlayed
-		planet.Deaths = dhPlanetStats.Deaths
-		planet.Revives = dhPlanetStats.Revives
-		planet.Friendlies = dhPlanetStats.Friendlies
-		planet.MissionSuccessRate = dhPlanetStats.MissionSuccessRate
-		planet.Accuracy = dhPlanetStats.Accuracy
-	}
 
 	if planetName, err := searchInPlanetNames(planetNames, planetId); err == nil {
 		planet.Name = planetName.Name
@@ -185,6 +169,26 @@ func constructPlanet(planetId int) (lib.Planet, error) {
 	planet.JointOperations = searchJointOperations(status.JointOperations, planetId)
 	planet.Campaigns = searchCampaigns(status.Campaigns, planetId)
 	planet.HomeWorlds = searchHomeWorlds(warInfo.HomeWorlds, planetId)
+
+	if dhPlanetsStats != nil {
+		if dhPlanetStats, err := searchInDiveHarderPlanetStats(dhPlanetsStats, planetId); err == nil {
+			planet.Index = dhPlanetStats.PlanetIndex
+			planet.MissionsWon = dhPlanetStats.MissionsWon
+			planet.MissionsLost = dhPlanetStats.MissionsLost
+			planet.MissionTime = dhPlanetStats.MissionTime
+			planet.TerminidKills = dhPlanetStats.BugKills
+			planet.AutomatonKills = dhPlanetStats.AutomatonKills
+			planet.IlluminateKills = dhPlanetStats.IlluminateKills
+			planet.BulletsFired = dhPlanetStats.BulletsFired
+			planet.BulletsHit = dhPlanetStats.BulletsHit
+			planet.TimePlayed = dhPlanetStats.TimePlayed
+			planet.Deaths = dhPlanetStats.Deaths
+			planet.Revives = dhPlanetStats.Revives
+			planet.Friendlies = dhPlanetStats.Friendlies
+			planet.MissionSuccessRate = dhPlanetStats.MissionSuccessRate
+			planet.Accuracy = dhPlanetStats.Accuracy
+		}
+	}
 
 	return planet, nil
 }
