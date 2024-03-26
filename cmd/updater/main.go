@@ -167,9 +167,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	checkOrder(order)
-	checkMessage(message)
-
 	log.Println("Press Ctrl-c to shut down")
 	for {
 		select {
