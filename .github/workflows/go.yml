@@ -23,3 +23,6 @@ jobs:
 
     - name: Build cmd/updater
       run: go build -v ./cmd/updater
+
+    - name: Build cmd/cli
+      run: go build -v ./cmd/cli
