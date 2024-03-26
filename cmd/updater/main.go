@@ -154,12 +154,12 @@ func main() {
 	log.Println("Getting message")
 	message, err := helldivers.GoDiversClient.GetNewsMessage()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	log.Println("Getting order")
 	order, err := helldivers.GoDiversClient.GetMajorOrder()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	log.Println("Getting planets")
 	planets, err := generatePlanets()
