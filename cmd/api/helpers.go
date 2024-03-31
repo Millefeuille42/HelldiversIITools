@@ -110,7 +110,7 @@ func searchCampaigns(campaigns []lib.Campaign, planetId int) []lib.Campaign {
 }
 
 func constructPlanet(planetId int) (lib.Planet, error) {
-	dhPlanetsStats, err := getDiveHarderPlanetStats()
+	dhPlanetsStats, err := getPlanetStats()
 	if err != nil {
 		log.Println(err)
 	}

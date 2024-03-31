@@ -59,11 +59,11 @@ func getLastMessage() (lib.NewsMessage, error) {
 	return message, err
 }
 
-func getDiveHarderPlanetStats() ([]lib.PlanetStats, error) {
+func getPlanetStats() ([]lib.PlanetStats, error) {
 	planetStats, err := redisCache.GetPlanetsStats()
 	if err != nil {
 		err = nil
-		stats, err := helldivers.DiveHarderClient.GetDiveHarderStats()
+		stats, err := helldivers.HDClient.GetHelldiversSummary(warId)
 		if err != nil {
 			return nil, err
 		}
@@ -77,11 +77,11 @@ func getDiveHarderPlanetStats() ([]lib.PlanetStats, error) {
 	return planetStats, err
 }
 
-func getDiveHarderGalaxyStats() (lib.GalaxyStats, error) {
+func getGalaxyStats() (lib.GalaxyStats, error) {
 	galaxyStats, err := redisCache.GetGalaxyStats()
 	if err != nil {
 		err = nil
-		stats, err := helldivers.DiveHarderClient.GetDiveHarderStats()
+		stats, err := helldivers.HDClient.GetHelldiversSummary(warId)
 		if err != nil {
 			return lib.GalaxyStats{}, err
 		}

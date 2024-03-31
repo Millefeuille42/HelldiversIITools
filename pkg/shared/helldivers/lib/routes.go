@@ -1,13 +1,13 @@
 package lib
 
 const (
-	DiveHarderStatsRoute = "/raw/planetstats"
-
-	HelldiversNewsFeedRoute          = "/NewsFeed/%s?fromTimeStamp=%d"
-	HelldiversAssignmentRoute        = "/v2/Assignment/War/%s"
-	HelldiversStatusRoute            = "/WarSeason/%s/status"
-	HelldiversWarInfoRoute           = "/WarSeason/%s/WarInfo"
-	HelldiversWarTimeSinceStartRoute = "/WarSeason/%s/timesincestart"
+	HelldiversNewsFeedRoute       = "/NewsFeed/%s?fromTimeStamp=%d"
+	HelldiversSummaryRoute        = "/Stats/War/%s/Summary"
+	HelldiversAssignmentRoute     = "/v2/Assignment/War/%s"
+	HelldiversWarStatusRoute      = "/WarSeason/%s/status"
+	HelldiversWarInfoRoute        = "/WarSeason/%s/WarInfo"
+	HelldiversTimeSinceStartRoute = "/WarSeason/%s/timesincestart"
+	HelldiversWarTimeRoute        = "/WarSeason/%s/WarTime"
 
 	GoDiversFeedRoute            = "/feed"
 	GoDiversOrderRoute           = "/order"

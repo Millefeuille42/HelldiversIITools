@@ -70,7 +70,7 @@ func planetHandler(c fiber.Ctx) error {
 
 // galaxyStatsHandler: returns: lib.GalaxyStats
 func galaxyStatsHandler(c fiber.Ctx) error {
-	stats, err := getDiveHarderGalaxyStats()
+	stats, err := getGalaxyStats()
 	if err != nil {
 		log.Println(err)
 		return fiber.ErrInternalServerError

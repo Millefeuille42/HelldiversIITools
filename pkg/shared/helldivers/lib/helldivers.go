@@ -6,16 +6,24 @@ import (
 	"fmt"
 )
 
-type Campaign struct {
-	Id          int `json:"id"`
-	PlanetIndex int `json:"planetIndex"`
-	Type        int `json:"type"`
-	Count       int `json:"count"`
+type TimeSinceStart struct {
+	SecondsSinceStart int64 `json:"secondsSinceStart"`
+}
+
+type WarTime struct {
+	Time int64 `json:"time"`
 }
 
 type PlanetAttack struct {
 	Source int `json:"source"`
 	Target int `json:"target"`
+}
+
+type Campaign struct {
+	Id          int `json:"id"`
+	PlanetIndex int `json:"planetIndex"`
+	Type        int `json:"type"`
+	Count       int `json:"count"`
 }
 
 type PlanetStatus struct {
@@ -32,6 +40,16 @@ type JointOperation struct {
 	HqNodeIndex int `json:"hqNodeIndex"`
 }
 
+type Position struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+}
+
+type HomeWorld struct {
+	Race          int   `json:"race"`
+	PlanetIndices []int `json:"planetIndices"`
+}
+
 type PlanetEvent struct {
 	Id                int   `json:"id"`
 	PlanetIndex       int   `json:"planetIndex"`
@@ -43,6 +61,14 @@ type PlanetEvent struct {
 	ExpireTime        int   `json:"expireTime"`
 	CampaignId        int   `json:"campaignId"`
 	JointOperationIds []int `json:"jointOperationIds"`
+}
+
+type NewsMessage struct {
+	Id        int           `json:"id"`
+	Published int           `json:"published"`
+	Type      int           `json:"type"`
+	TagIds    []interface{} `json:"tagIds"`
+	Message   string        `json:"message"`
 }
 
 type Status struct {
@@ -62,11 +88,6 @@ type Status struct {
 	SuperEarthWarResults        []interface{}    `json:"superEarthWarResults"`
 }
 
-type Position struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-}
-
 type PlanetInfo struct {
 	Index        int      `json:"index"`
 	SettingsHash int64    `json:"settingsHash"`
@@ -78,11 +99,6 @@ type PlanetInfo struct {
 	InitialOwner int      `json:"initialOwner"`
 }
 
-type HomeWorld struct {
-	Race          int   `json:"race"`
-	PlanetIndices []int `json:"planetIndices"`
-}
-
 type WarInfo struct {
 	WarId                  int           `json:"warId"`
 	StartDate              int           `json:"startDate"`
@@ -92,14 +108,6 @@ type WarInfo struct {
 	HomeWorlds             []HomeWorld   `json:"homeWorlds"`
 	CapitalInfos           []interface{} `json:"capitalInfos"`
 	PlanetPermanentEffects []interface{} `json:"planetPermanentEffects"`
-}
-
-type NewsMessage struct {
-	Id        int           `json:"id"`
-	Published int           `json:"published"`
-	Type      int           `json:"type"`
-	TagIds    []interface{} `json:"tagIds"`
-	Message   string        `json:"message"`
 }
 
 type Assignment struct {
@@ -125,8 +133,33 @@ type Assignment struct {
 	} `json:"setting"`
 }
 
-type TimeSinceStart struct {
-	SecondsSinceStart int `json:"secondsSinceStart"`
+type GenericStats struct {
+	MissionsWon        int64 `json:"missionsWon"`
+	MissionsLost       int64 `json:"missionsLost"`
+	MissionTime        int64 `json:"missionTime"`
+	BugKills           int64 `json:"bugKills"`
+	AutomatonKills     int64 `json:"automatonKills"`
+	IlluminateKills    int64 `json:"illuminateKills"`
+	BulletsFired       int64 `json:"bulletsFired"`
+	BulletsHit         int64 `json:"bulletsHit"`
+	TimePlayed         int64 `json:"timePlayed"`
+	Deaths             int64 `json:"deaths"`
+	Revives            int64 `json:"revives"`
+	Friendlies         int64 `json:"friendlies"`
+	MissionSuccessRate int   `json:"missionSuccessRate"`
+	Accuracy           int   `json:"accurracy"`
+}
+
+type GalaxyStats GenericStats
+
+type PlanetStats struct {
+	PlanetIndex int `json:"planetIndex"`
+	GenericStats
+}
+
+type Summary struct {
+	GalaxyStats  GalaxyStats   `json:"galaxy_stats"`
+	PlanetsStats []PlanetStats `json:"planets_stats"`
 }
 
 func (c *Client) GetHelldiversNewsFeed(warId string, timestamp int) ([]NewsMessage, error) {
@@ -175,7 +208,7 @@ func (c *Client) GetHelldiversAssignment(warId string) (Assignment, error) {
 }
 
 func (c *Client) GetHelldiversStatus(warId string) (Status, error) {
-	resp, err := c.Request("GET", fmt.Sprintf(HelldiversStatusRoute, warId), nil)
+	resp, err := c.Request("GET", fmt.Sprintf(HelldiversWarStatusRoute, warId), nil)
 	if err != nil {
 		return Status{}, err
 	}
@@ -197,7 +230,7 @@ func (c *Client) GetHelldiversWarInfo(warId string) (WarInfo, error) {
 }
 
 func (c *Client) GetHelldiversTimeSinceStart(warId string) (TimeSinceStart, error) {
-	resp, err := c.Request("GET", fmt.Sprintf(HelldiversWarTimeSinceStartRoute, warId), nil)
+	resp, err := c.Request("GET", fmt.Sprintf(HelldiversTimeSinceStartRoute, warId), nil)
 	if err != nil {
 		return TimeSinceStart{}, err
 	}
@@ -205,4 +238,26 @@ func (c *Client) GetHelldiversTimeSinceStart(warId string) (TimeSinceStart, erro
 	var timeSinceStart TimeSinceStart
 	err = json.Unmarshal(resp.bodyRead, &timeSinceStart)
 	return timeSinceStart, err
+}
+
+func (c *Client) GetHelldiversWarTime(warId string) (WarTime, error) {
+	resp, err := c.Request("GET", fmt.Sprintf(HelldiversWarTimeRoute, warId), nil)
+	if err != nil {
+		return WarTime{}, err
+	}
+
+	var warTime WarTime
+	err = json.Unmarshal(resp.bodyRead, &warTime)
+	return warTime, err
+}
+
+func (c *Client) GetHelldiversSummary(warId string) (Summary, error) {
+	resp, err := c.Request("GET", fmt.Sprintf(HelldiversSummaryRoute, warId), nil)
+	if err != nil {
+		return Summary{}, err
+	}
+
+	var summary Summary
+	err = json.Unmarshal(resp.bodyRead, &summary)
+	return summary, err
 }
