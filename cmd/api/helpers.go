@@ -60,17 +60,16 @@ func searchHomeWorlds(homeWorlds []lib.HomeWorld, planetId int) []lib.HomeWorld 
 	return planetHomeWorlds
 }
 
-func searchPlanetEvents(planets []lib.PlanetEvent, planetId int) []lib.PlanetEvent {
+func searchPlanetEvent(planets []lib.PlanetEvent, planetId int) *lib.PlanetEvent {
 	if planets == nil {
 		return nil
 	}
-	var events []lib.PlanetEvent
 	for i := range planets {
 		if planets[i].PlanetIndex == planetId {
-			events = append(events, planets[i])
+			return &planets[i]
 		}
 	}
-	return events
+	return nil
 }
 
 func searchPlanetAttacks(planets []lib.PlanetAttack, planetId int) []lib.PlanetAttack {
@@ -99,7 +98,7 @@ func searchJointOperations(operations []lib.JointOperation, planetId int) []lib.
 	return planetOperations
 }
 
-func searchCampaigns(campaigns []lib.Campaign, planetId int) *lib.Campaign {
+func searchCampaign(campaigns []lib.Campaign, planetId int) *lib.Campaign {
 	for i := range campaigns {
 		if campaigns[i].PlanetIndex == planetId {
 			return &campaigns[i]
@@ -164,9 +163,9 @@ func constructPlanet(planetId int) (lib.Planet, error) {
 	}
 
 	planet.Attacks = searchPlanetAttacks(status.PlanetAttacks, planetId)
-	planet.Events = searchPlanetEvents(status.PlanetEvents, planetId)
+	planet.Event = searchPlanetEvent(status.PlanetEvents, planetId)
 	planet.JointOperations = searchJointOperations(status.JointOperations, planetId)
-	planet.Campaign = searchCampaigns(status.Campaigns, planetId)
+	planet.Campaign = searchCampaign(status.Campaigns, planetId)
 	planet.HomeWorlds = searchHomeWorlds(warInfo.HomeWorlds, planetId)
 
 	if dhPlanetsStats != nil {

@@ -34,8 +34,8 @@ func buildTaskProgress(task lib.Task) string {
 	if err != nil {
 		log.Println(err)
 	} else {
-		for _, event := range planet.Events {
-			switch lib.EventType(event.EventType) {
+		if planet.Event != nil {
+			switch lib.EventType(planet.Event.EventType) {
 			case lib.DefenseEventType:
 				taskType = "Defend"
 			}

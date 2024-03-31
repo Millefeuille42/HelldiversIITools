@@ -65,10 +65,10 @@ type Planet struct {
 	Accuracy           int   `json:"accuracy"`
 
 	Attacks         []PlanetAttack   `json:"attacks"`
-	Events          []PlanetEvent    `json:"events"`
 	JointOperations []JointOperation `json:"joint_operations"`
 	HomeWorlds      []HomeWorld      `json:"home_worlds"`
 	Campaign        *Campaign        `json:"campaign"`
+	Event           *PlanetEvent     `json:"event"`
 }
 
 type PlanetName struct {
