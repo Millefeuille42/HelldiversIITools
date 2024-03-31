@@ -11,7 +11,7 @@ import (
 var NameMap = map[lib.Faction]string{
 	lib.Automatons: "Automatons",
 	lib.Terminids:  "Terminids",
-	lib.Humans:     "Humans",
+	lib.Humans:     "Super-Earth",
 }
 
 var ColorMap = map[lib.Faction]int{
@@ -37,7 +37,7 @@ func BuildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 		Fields: make([]*discordgo.MessageEmbedField, 0),
 	}
 
-	if planet.InitialOwner != lib.Humans {
+	if planet.InitialOwner != lib.Humans && planet.Owner != lib.Humans {
 		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
 			Name:   "Menace",
 			Value:  NameMap[planet.InitialOwner],

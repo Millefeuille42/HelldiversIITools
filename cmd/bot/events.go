@@ -78,6 +78,7 @@ func handlePlanetLiberated(event []byte) error {
 		return errors.New("invalid data type")
 	}
 
+	planet.LiberationPercent = 0
 	embed := embeds.BuildPlanetEmbed(planet)
 	embed.Title = fmt.Sprintf("✅ %s liberated", embed.Title)
 	return streamEmbed(embed)
