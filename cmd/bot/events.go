@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Helldivers2Tools/pkg/bot/components"
 	"Helldivers2Tools/pkg/bot/embeds"
 	"Helldivers2Tools/pkg/bot/globals"
 	"Helldivers2Tools/pkg/bot/models"
@@ -20,7 +21,7 @@ var eventMap = map[redisEvent.EventType]func([]byte) error{
 	redisEvent.PlanetLostEventType:      handlePlanetLost,
 }
 
-func streamEmbed(embed *discordgo.MessageEmbed) error {
+func streamComplex(complex *discordgo.MessageSend) error {
 	guilds, err := models.GetGuilds()
 	if err != nil {
 		return err
@@ -29,12 +30,16 @@ func streamEmbed(embed *discordgo.MessageEmbed) error {
 		if guild.AnnouncementChannel == "" {
 			continue
 		}
-		_, err = globals.Bot.ChannelMessageSendEmbed(guild.AnnouncementChannel, embed)
+		_, err = globals.Bot.ChannelMessageSendComplex(guild.AnnouncementChannel, complex)
 		if err != nil {
 			log.Println(err)
 		}
 	}
 	return nil
+}
+
+func streamEmbed(embed *discordgo.MessageEmbed) error {
+	return streamComplex(&discordgo.MessageSend{Embed: embed})
 }
 
 func handleNewMessage(event []byte) error {
@@ -68,7 +73,10 @@ func handleNewOrder(event []byte) error {
 	embed := embeds.BuildOrderEmbed(newOrder)
 	embed.Title = "NEW MAJOR ORDER"
 	embed.Color = 15616811
-	return streamEmbed(embed)
+	return streamComplex(&discordgo.MessageSend{
+		Components: components.BuildOrderComponents(newOrder),
+		Embeds:     []*discordgo.MessageEmbed{embeds.BuildOrderEmbed(newOrder)},
+	})
 }
 
 func handlePlanetLiberated(event []byte) error {
@@ -81,7 +89,10 @@ func handlePlanetLiberated(event []byte) error {
 	planet.LiberationPercent = 0
 	embed := embeds.BuildPlanetEmbed(planet)
 	embed.Title = fmt.Sprintf("✅ %s liberated", embed.Title)
-	return streamEmbed(embed)
+	return streamComplex(&discordgo.MessageSend{
+		Components: components.BuildPlanetComponent(planet),
+		Embeds:     []*discordgo.MessageEmbed{embeds.BuildPlanetEmbed(planet)},
+	})
 }
 
 func handlePlanetLost(event []byte) error {
@@ -93,5 +104,8 @@ func handlePlanetLost(event []byte) error {
 
 	embed := embeds.BuildPlanetEmbed(planet)
 	embed.Title = fmt.Sprintf("❌ %s lost to the %s", embed.Title, embeds.NameMap[planet.Owner])
-	return streamEmbed(embed)
+	return streamComplex(&discordgo.MessageSend{
+		Components: components.BuildPlanetComponent(planet),
+		Embeds:     []*discordgo.MessageEmbed{embeds.BuildPlanetEmbed(planet)},
+	})
 }

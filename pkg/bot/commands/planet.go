@@ -1,11 +1,11 @@
 package commands
 
 import (
+	"Helldivers2Tools/pkg/bot/components"
 	"Helldivers2Tools/pkg/bot/embeds"
 	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
 	"Helldivers2Tools/pkg/shared/utils"
-	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
@@ -21,28 +21,6 @@ func buildPlanetsChoices(planets []lib.PlanetName) []*discordgo.ApplicationComma
 	}
 
 	return choices
-}
-
-func buildPlanetComponent(planet lib.Planet) []discordgo.MessageComponent {
-	if planet.Waypoints == nil || len(planet.Waypoints) <= 0 {
-		return nil
-	}
-
-	var buttons []discordgo.MessageComponent
-
-	for _, waypoint := range planet.Waypoints {
-		buttons = append(buttons, discordgo.Button{
-			Label:    waypoint.Name,
-			Style:    0,
-			Disabled: false,
-			Emoji: discordgo.ComponentEmoji{
-				Name: "🌎",
-			},
-			CustomID: fmt.Sprintf("planet_button-%d", waypoint.Index),
-		})
-	}
-
-	return []discordgo.MessageComponent{discordgo.ActionsRow{Components: buttons}}
 }
 
 func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -84,7 +62,7 @@ func planetCommandHandler(s *discordgo.Session, i *discordgo.InteractionCreate) 
 
 	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
 		Content:    "",
-		Components: buildPlanetComponent(selectedPlanet),
+		Components: components.BuildPlanetComponent(selectedPlanet),
 		Embeds: []*discordgo.MessageEmbed{
 			embeds.BuildPlanetEmbed(selectedPlanet),
 		},
@@ -110,7 +88,7 @@ func planetComponentHandler(s *discordgo.Session, i *discordgo.InteractionCreate
 	}
 
 	_, err = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
-		Components: buildPlanetComponent(planet),
+		Components: components.BuildPlanetComponent(planet),
 		Embeds: []*discordgo.MessageEmbed{
 			embeds.BuildPlanetEmbed(planet),
 		},
