@@ -68,7 +68,7 @@ type Planet struct {
 	Events          []PlanetEvent    `json:"events"`
 	JointOperations []JointOperation `json:"joint_operations"`
 	HomeWorlds      []HomeWorld      `json:"home_worlds"`
-	Campaigns       []Campaign       `json:"campaigns"`
+	Campaign        *Campaign        `json:"campaign"`
 }
 
 type PlanetName struct {
