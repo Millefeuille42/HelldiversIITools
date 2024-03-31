@@ -26,6 +26,68 @@ var ImageMap = map[lib.Faction]string{
 	lib.Humans:     "https://cdn.discordapp.com/app-assets/1219964573231091713/1220040867881156618.png",
 }
 
+func buildPlanetEventEmbedFields(planet lib.Planet) (string, []*discordgo.MessageEmbedField) {
+	var fields []*discordgo.MessageEmbedField
+	emoji := ":shield:"
+	action := "defended"
+	percentName := "Defense"
+
+	switch lib.EventType(planet.Event.EventType) {
+	}
+
+	fields = append(fields, &discordgo.MessageEmbedField{
+		Name:   fmt.Sprintf("Must be %s from", action),
+		Value:  NameMap[lib.Faction(planet.Event.Race)],
+		Inline: false,
+	})
+
+	fields = append(fields, &discordgo.MessageEmbedField{
+		Name:   "Under control of",
+		Value:  NameMap[planet.Owner],
+		Inline: false,
+	})
+
+	eventPercent := 100.0 - 100.0*float64(planet.Event.Health)/float64(planet.Event.MaxHealth)
+
+	if eventPercent > 0 {
+		fields = append(fields, &discordgo.MessageEmbedField{
+			Name:   fmt.Sprintf("%s status", percentName),
+			Value:  fmt.Sprintf("%f%% %s", eventPercent, action),
+			Inline: false,
+		})
+	}
+
+	return emoji, fields
+}
+
+func buildPlanetNoEventEmbedFields(planet lib.Planet) []*discordgo.MessageEmbedField {
+	var fields []*discordgo.MessageEmbedField
+
+	if planet.InitialOwner != lib.Humans && planet.Owner != lib.Humans {
+		fields = append(fields, &discordgo.MessageEmbedField{
+			Name:   "Menace",
+			Value:  NameMap[planet.InitialOwner],
+			Inline: false,
+		})
+	}
+
+	fields = append(fields, &discordgo.MessageEmbedField{
+		Name:   "Under control of",
+		Value:  NameMap[planet.Owner],
+		Inline: true,
+	})
+
+	if planet.LiberationPercent > 0 {
+		fields = append(fields, &discordgo.MessageEmbedField{
+			Name:   "Liberation status",
+			Value:  fmt.Sprintf("%f%% liberated", planet.LiberationPercent),
+			Inline: false,
+		})
+	}
+
+	return fields
+}
+
 func BuildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 	ret := &discordgo.MessageEmbed{
 		Type:  "rich",
@@ -37,26 +99,12 @@ func BuildPlanetEmbed(planet lib.Planet) *discordgo.MessageEmbed {
 		Fields: make([]*discordgo.MessageEmbedField, 0),
 	}
 
-	if planet.InitialOwner != lib.Humans && planet.Owner != lib.Humans {
-		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
-			Name:   "Menace",
-			Value:  NameMap[planet.InitialOwner],
-			Inline: false,
-		})
-	}
-
-	ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
-		Name:   "Under control of",
-		Value:  NameMap[planet.Owner],
-		Inline: true,
-	})
-
-	if planet.LiberationPercent > 0 {
-		ret.Fields = append(ret.Fields, &discordgo.MessageEmbedField{
-			Name:   "Liberation status",
-			Value:  fmt.Sprintf("%f%% liberated", planet.LiberationPercent),
-			Inline: false,
-		})
+	if planet.Event != nil {
+		emoji, fields := buildPlanetEventEmbedFields(planet)
+		ret.Title = fmt.Sprintf("%s %s", emoji, ret.Title)
+		ret.Fields = append(ret.Fields, fields...)
+	} else {
+		ret.Fields = append(ret.Fields, buildPlanetNoEventEmbedFields(planet)...)
 	}
 
 	if planet.Players > 0 || planet.Deaths > 0 {
