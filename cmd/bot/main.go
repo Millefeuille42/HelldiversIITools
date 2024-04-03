@@ -4,6 +4,7 @@ import (
 	"Helldivers2Tools/pkg/bot/commands"
 	"Helldivers2Tools/pkg/bot/database"
 	"Helldivers2Tools/pkg/bot/discord"
+	"Helldivers2Tools/pkg/bot/embeds"
 	"Helldivers2Tools/pkg/bot/globals"
 	"Helldivers2Tools/pkg/bot/models"
 	"Helldivers2Tools/pkg/shared/helldivers"
@@ -76,7 +77,7 @@ func main() {
 	}
 
 	newsMessage, err := helldivers.GoDiversClient.GetNewsMessage()
-	newsTitle, _ := lib.SplitNewsMessage(newsMessage)
+	newsTitle, _ := embeds.SplitNewsMessage(newsMessage)
 	err = setBotStatus(newsTitle)
 	if err != nil {
 		log.Println(err)

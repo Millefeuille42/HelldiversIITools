@@ -49,18 +49,13 @@ func handleNewMessage(event []byte) error {
 		return errors.New("invalid data type")
 	}
 
-	newsTitle, message := lib.SplitNewsMessage(newMessage)
+	newsTitle, _ := embeds.SplitNewsMessage(newMessage)
 	err = setBotStatus(newsTitle)
 	if err != nil {
 		log.Println(err)
 	}
 
-	return streamEmbed(&discordgo.MessageEmbed{
-		Type:        "rich",
-		Color:       15616811,
-		Title:       "Incoming message: " + newsTitle,
-		Description: message,
-	})
+	return streamEmbed(embeds.BuildFeedEmbed(newMessage, 15616811))
 }
 
 func handleNewOrder(event []byte) error {
