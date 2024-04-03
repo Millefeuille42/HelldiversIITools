@@ -1,4 +1,4 @@
-name: Go
+name: Go - Build
 
 on:
   push:
@@ -7,8 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-
-  build:
+  build-api:
     runs-on: ubuntu-latest
     container:
       image: golang:1.20-alpine
@@ -18,11 +17,32 @@ jobs:
     - name: Build cmd/api
       run: go build -v ./cmd/api
 
-    - name: Build cmd/bot
-      run: go build -v ./cmd/bot
+  build-bot:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.20-alpine
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: Build cmd/updater
-      run: go build -v ./cmd/updater
+      - name: Build cmd/bot
+        run: go build -v ./cmd/bot
 
-    - name: Build cmd/cli
-      run: go build -v ./cmd/cli
+  build-updater:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.20-alpine
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build cmd/updater
+        run: go build -v ./cmd/updater
+
+  build-cli:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.20-alpine
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build cmd/cli
+        run: go build -v ./cmd/cli
