@@ -30,10 +30,7 @@ Your bot is equipped with the following slash-commands:
 
 ### API Support
 
-To fuel your operations, the bot taps into two key APIs:
-
-1. **Official Helldivers API**: A sanctioned source for critical data.
-2. **Unofficial Helldivers API (Diveharder)**: A clandestine source for supplementary information.
+To fuel your operations, the bot taps into the official Helldivers II API:
 
 ## Deployment Tactics
 
