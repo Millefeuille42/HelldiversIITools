@@ -30,7 +30,7 @@ Your bot is equipped with the following slash-commands:
 
 ### API Support
 
-To fuel your operations, the bot taps into the official Helldivers II API:
+To fuel your operations, the bot taps into the official Helldivers II API.
 
 ## Deployment Tactics
 
@@ -41,6 +41,7 @@ Your arsenal includes the following components:
 - **Bot**: The front-line interface with Discord servers.
 - **API**: A covert transformer/caching hub.
 - **Updater**: The silent sentinel, notifying events to the bot.
+- **CLI**: Command-line interface for manual interactions.
 
 ### Logistics
 
