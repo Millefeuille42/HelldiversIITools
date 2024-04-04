@@ -2,10 +2,12 @@ package lib
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"os"
 )
 
 type Response struct {
@@ -47,6 +49,11 @@ func (c *Client) generateRequest(method string, endpoint string, data []byte) (*
 		return nil, err
 	}
 	req.Header.Set("Accept-Language", "en-US")
+	userAgent := "Helldivers II Tools"
+	if os.Getenv("HDII__GENERIC__USER_AGENT") != "" {
+		userAgent = fmt.Sprintf("%s - %s", userAgent, os.Getenv("HDII__GENERIC__USER_AGENT"))
+	}
+	req.Header.Set("User-Agent", userAgent)
 
 	return req, err
 }

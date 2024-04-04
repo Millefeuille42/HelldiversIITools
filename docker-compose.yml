@@ -14,6 +14,7 @@ services:
     depends_on:
       - redis
     environment:
+      - HDII__GENERIC__USER_AGENT=${HDII__GENERIC__USER_AGENT-docker}-api
       - HDII__API__BIND_ADDRESS=0.0.0.0:3000
       - HDII__API__REDIS_DB=${HDII__API__REDIS_DB-0}
       - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
@@ -31,6 +32,7 @@ services:
     depends_on:
       - api
     environment:
+      - HDII__GENERIC__USER_AGENT=${HDII__GENERIC__USER_AGENT-docker}-bot
       - HDII__API__REDIS_DB=${HDII__API__REDIS_DB-0}
       - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
       - HDII__API__REDIS_PORT=${HDII__API__REDIS_PORT-6379}
@@ -50,6 +52,7 @@ services:
       - api
       - redis
     environment:
+      - HDII__GENERIC__USER_AGENT=${HDII__GENERIC__USER_AGENT-docker}-updater
       - HDII__API__REDIS_DB=${HDII__API__REDIS_DB-0}
       - HDII__API__REDIS_HOST=${HDII__API__REDIS_HOST-redis}
       - HDII__API__REDIS_PORT=${HDII__API__REDIS_PORT-6379}
