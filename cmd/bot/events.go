@@ -39,7 +39,7 @@ func streamComplex(complex *discordgo.MessageSend) error {
 }
 
 func streamEmbed(embed *discordgo.MessageEmbed) error {
-	return streamComplex(&discordgo.MessageSend{Embed: embed})
+	return streamComplex(&discordgo.MessageSend{Embeds: []*discordgo.MessageEmbed{embed}})
 }
 
 func handleNewMessage(event []byte) error {
