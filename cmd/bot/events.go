@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
+	"strings"
 )
 
 var eventMap = map[redisEvent.EventType]func([]byte) error{
@@ -50,9 +51,11 @@ func handleNewMessage(event []byte) error {
 	}
 
 	newsTitle, _ := embeds.SplitNewsMessage(newMessage)
-	err = setBotStatus(newsTitle)
-	if err != nil {
-		log.Println(err)
+	if !strings.HasPrefix(newsTitle, "BOT: ") {
+		err = setBotStatus(newsTitle)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	return streamEmbed(embeds.BuildFeedEmbed(newMessage, 15616811))
