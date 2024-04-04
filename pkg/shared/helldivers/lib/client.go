@@ -47,6 +47,7 @@ func (c *Client) generateRequest(method string, endpoint string, data []byte) (*
 		return nil, err
 	}
 	req.Header.Set("Accept-Language", "en-US")
+	req.Header.Set("User-Agent", "Helldivers II Tools")
 
 	return req, err
 }
