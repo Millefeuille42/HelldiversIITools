@@ -4,6 +4,6 @@ import "regexp"
 
 var re = regexp.MustCompile("<[^>]*>")
 
-func StripMarkup(text string) string {
-	return re.ReplaceAllString(text, "**")
+func StripMarkup(text, replacement string) string {
+	return re.ReplaceAllString(text, replacement)
 }

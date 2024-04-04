@@ -20,7 +20,7 @@ import (
 )
 
 func setBotStatus(status string) error {
-	return globals.Bot.UpdateListeningStatus(status)
+	return globals.Bot.UpdateListeningStatus(utils.StripMarkup(status, ""))
 }
 
 func setUpBot() *discordgo.Session {

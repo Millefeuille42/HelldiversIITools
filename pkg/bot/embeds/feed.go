@@ -24,7 +24,7 @@ func BuildFeedEmbed(news lib.NewsMessage, color int) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Type:        "rich",
 		Color:       color,
-		Title:       "Incoming message: " + utils.StripMarkup(title),
-		Description: utils.StripMarkup(desc),
+		Title:       "Incoming message: " + utils.StripMarkup(title, "**"),
+		Description: utils.StripMarkup(desc, "**"),
 	}
 }
