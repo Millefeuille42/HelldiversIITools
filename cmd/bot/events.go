@@ -89,7 +89,7 @@ func handlePlanetLiberated(event []byte) error {
 	embed.Title = fmt.Sprintf("✅ %s liberated", embed.Title)
 	return streamComplex(&discordgo.MessageSend{
 		Components: components.BuildPlanetComponent(planet),
-		Embeds:     []*discordgo.MessageEmbed{embeds.BuildPlanetEmbed(planet)},
+		Embeds:     []*discordgo.MessageEmbed{embed},
 	})
 }
 
@@ -104,6 +104,6 @@ func handlePlanetLost(event []byte) error {
 	embed.Title = fmt.Sprintf("❌ %s lost to the %s", embed.Title, embeds.NameMap[planet.Owner])
 	return streamComplex(&discordgo.MessageSend{
 		Components: components.BuildPlanetComponent(planet),
-		Embeds:     []*discordgo.MessageEmbed{embeds.BuildPlanetEmbed(planet)},
+		Embeds:     []*discordgo.MessageEmbed{embed},
 	})
 }
