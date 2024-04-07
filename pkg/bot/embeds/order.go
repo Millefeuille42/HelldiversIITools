@@ -3,6 +3,7 @@ package embeds
 import (
 	"Helldivers2Tools/pkg/shared/helldivers"
 	"Helldivers2Tools/pkg/shared/helldivers/lib"
+	"Helldivers2Tools/pkg/shared/utils"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
@@ -54,8 +55,8 @@ func BuildOrderEmbed(order lib.MajorOrder) *discordgo.MessageEmbed {
 	ret := &discordgo.MessageEmbed{
 		Type: "rich",
 		// TODO add reward image
-		Title:       order.Title,
-		Description: order.Description,
+		Title:       utils.StripMarkup(order.Title, "**"),
+		Description: utils.StripMarkup(order.Description, "**"),
 		Fields:      make([]*discordgo.MessageEmbedField, 0),
 	}
 
