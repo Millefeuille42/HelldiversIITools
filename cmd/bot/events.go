@@ -73,7 +73,7 @@ func handleNewOrder(event []byte) error {
 	embed.Color = 15616811
 	return streamComplex(&discordgo.MessageSend{
 		Components: components.BuildOrderComponents(newOrder),
-		Embeds:     []*discordgo.MessageEmbed{embeds.BuildOrderEmbed(newOrder)},
+		Embeds:     []*discordgo.MessageEmbed{embed},
 	})
 }
 
