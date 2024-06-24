@@ -7,7 +7,7 @@ Welcome, Helldiver! You're about to deploy the Helldivers II Discord Bot, your t
 The Helldivers II Discord Bot is accessible at [this url](https://discord.com/oauth2/authorize?client_id=1219964573231091713&permissions=277025705024&scope=bot) for immediate deployment.
 Alternatively, it can be self-deployed using the provided resources.
 
-[Join the official server!](https://discord.gg/5DawaMJh)
+[Join the official server!](https://discord.com/oauth2/authorize?client_id=1219964573231091713)
 
 ## Mission Objectives
 
